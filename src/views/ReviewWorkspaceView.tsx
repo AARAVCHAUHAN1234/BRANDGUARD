@@ -1,22 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useBrand } from '../context/BrandContext';
-import { Finding, FindingStatus, Severity } from '../types';
+import { FindingStatus } from '../types';
 import { DiffViewer } from '../components/DiffViewer';
 import {
-  ShieldAlert,
-  CheckCircle,
-  AlertTriangle,
   RotateCcw,
-  Sparkles,
-  ExternalLink,
-  CheckCheck,
-  Send,
-  FileCheck,
-  UserCheck,
+  Check,
+  AlertTriangle,
   Lock,
-  MessageSquare,
-  HelpCircle,
-  Eye,
   Edit3,
 } from 'lucide-react';
 
@@ -26,9 +16,7 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
     updateFindingDecision,
     applyAllAcceptedFixes,
     approveSubmission,
-    rejectSubmission,
     currentRole,
-    currentUser,
     runReviewOnSubmission,
     showToast,
   } = useBrand();
@@ -40,27 +28,7 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
   const [showEditInput, setShowEditInput] = useState<boolean>(false);
   const [isReviewing, setIsReviewing] = useState<boolean>(false);
 
-  if (!activeSubmission) {
-    return (
-      <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
-        <ShieldAlert className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-        <h3 className="text-lg font-bold text-navy-900">No active submission selected</h3>
-        <p className="text-xs text-slate-500 mb-4">Select a submission from the Dashboard to begin review.</p>
-        <button
-          onClick={() => onNavigate('dashboard')}
-          className="bg-navy-900 text-white text-xs px-4 py-2 rounded-xl font-semibold"
-        >
-          Go to Dashboard
-        </button>
-      </div>
-    );
-  }
-
-  const findings = activeSubmission.findings;
-
-  // Selected finding
-  const selectedFinding =
-    findings.find((f) => f.id === selectedFindingId) || findings[0] || null;
+  const findings = useMemo(() => activeSubmission?.findings || [], [activeSubmission]);
 
   // Filtered list
   const filteredFindings = useMemo(() => {
@@ -68,11 +36,35 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
     return findings.filter((f) => f.severity.toLowerCase() === filterSeverity.toLowerCase());
   }, [findings, filterSeverity]);
 
+  // Selected finding
+  const selectedFinding = useMemo(() => {
+    if (!filteredFindings.length) return null;
+    return filteredFindings.find((f) => f.id === selectedFindingId) || filteredFindings[0] || null;
+  }, [filteredFindings, selectedFindingId]);
+
+  if (!activeSubmission) {
+    return (
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-16 text-center max-w-xl mx-auto space-y-4">
+        <span className="font-mono text-xs text-[#73716B] uppercase tracking-widest">[DOSSIER VACANT]</span>
+        <h3 className="font-serif text-3xl text-[#171717]">No active submission selected</h3>
+        <p className="text-xs text-[#73716B] leading-relaxed">
+          Select a draft from the Dashboard index to initiate the proofreading and governance workflow.
+        </p>
+        <button
+          onClick={() => onNavigate('dashboard')}
+          className="bg-[#171717] text-[#F7F6F2] text-xs px-5 py-2.5 font-medium border border-[#171717] hover:bg-[#2b2b2b] transition-colors"
+        >
+          Return to Dashboard
+        </button>
+      </div>
+    );
+  }
+
   // Handle human decision submit
   const handleDecision = (status: FindingStatus) => {
     if (!selectedFinding) return;
     if (!decisionReason.trim()) {
-      showToast('⚠️ A recorded justification/reason is REQUIRED for every human governance decision.');
+      showToast('⚠️ A recorded justification is mandatory for every human governance decision.');
       return;
     }
 
@@ -99,16 +91,14 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
   const renderHighlightedContent = () => {
     const text = activeSubmission.content;
     if (!findings || findings.length === 0) {
-      return <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-800">{text}</div>;
+      return <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[#171717]">{text}</div>;
     }
 
-    // Sort findings by start index
     const sorted = [...findings].sort((a, b) => a.startIndex - b.startIndex);
     const elements: React.ReactNode[] = [];
     let lastIndex = 0;
 
     sorted.forEach((finding, index) => {
-      // Catch occurrences even if indices shifted
       let start = finding.startIndex;
       let end = finding.endIndex;
 
@@ -122,7 +112,6 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
         }
       }
 
-      // Add text prior to match
       if (start > lastIndex) {
         elements.push(
           <span key={`text-${index}`}>{text.substring(lastIndex, start)}</span>
@@ -143,8 +132,8 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
         <span
           key={`finding-${finding.id}-${index}`}
           onClick={() => setSelectedFindingId(finding.id)}
-          className={`${markClass} ${isSelected ? 'selected ring-2 ring-navy-900 font-semibold' : ''} ${
-            isResolved ? 'opacity-50 line-through' : ''
+          className={`${markClass} ${isSelected ? 'selected ring-1 ring-[#171717] font-semibold' : ''} ${
+            isResolved ? 'opacity-40 line-through' : ''
           }`}
           title={`${finding.ruleName} (${finding.severity}) - Click to inspect reasoning`}
         >
@@ -160,7 +149,7 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
     }
 
     return (
-      <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-800 selection:bg-yellow-200">
+      <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[#171717] select-text">
         {elements}
       </div>
     );
@@ -169,81 +158,84 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
   const acceptedCount = findings.filter((f) => f.humanDecision?.status === 'accepted').length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Top Banner if Reopened or Approved */}
       {activeSubmission.status === 'Reopened' && (
-        <div className="bg-red-50 border-2 border-red-400 p-4 rounded-2xl flex items-start gap-3 shadow-md">
-          <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-          <div className="text-xs">
-            <span className="font-bold text-red-900 text-sm">
-              Approval Invalidated: Material edit detected post-approval.
+        <div className="border border-[#9B382B] bg-[#F6ECEB] p-4 text-xs flex items-start gap-3">
+          <AlertTriangle className="w-4 h-4 text-[#9B382B] shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <span className="font-serif text-sm font-bold text-[#9B382B]">
+              Approval Seal Voided — Post-Approval Alteration Detected
             </span>
-            <p className="text-red-700 mt-0.5">
+            <p className="text-[#9B382B] leading-relaxed">
               {activeSubmission.reopenReason ||
-                'The content cryptographic hash no longer matches the signed approval seal. The approval was automatically revoked.'}
+                'The content cryptographic hash no longer coincides with the certified signoff ledger. Approval has been automatically rescinded.'}
             </p>
           </div>
         </div>
       )}
 
       {activeSubmission.status === 'Approved' && (
-        <div className="bg-emerald-50 border border-emerald-300 p-3.5 rounded-2xl flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-emerald-900">
-            <CheckCircle className="w-4 h-4 text-emerald-600" />
-            <span className="font-bold">
-              Officially Approved for Publication by {activeSubmission.approvedBy} ({activeSubmission.approvalRole})
+        <div className="border border-[#2D5A38] bg-[#EEF4EF] p-4 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-2.5 text-[#2D5A38]">
+            <Check className="w-4 h-4 text-[#2D5A38]" />
+            <span className="font-serif text-sm font-medium">
+              Certified for Public Release by {activeSubmission.approvedBy} ({activeSubmission.approvalRole})
             </span>
-            <span className="font-mono text-[11px] bg-emerald-100 px-2 py-0.5 rounded text-emerald-800">
-              Seal: {activeSubmission.approvedContentHash?.slice(0, 16)}...
+            <span className="font-mono text-[10px] border border-[#2D5A38]/30 px-2 py-0.5 bg-[#FFFFFF]">
+              HASH: {activeSubmission.approvedContentHash?.slice(0, 16)}...
             </span>
           </div>
-          <span className="text-emerald-700 font-semibold">{activeSubmission.approvedAt}</span>
+          <span className="font-mono text-[11px] text-[#2D5A38]">{activeSubmission.approvedAt}</span>
         </div>
       )}
 
       {/* Hero Workspace Header */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-heading font-bold text-lg text-navy-900">{activeSubmission.title}</span>
-            <span className="bg-slate-100 text-slate-700 text-[11px] font-semibold px-2 py-0.5 rounded">
-              {activeSubmission.channel}
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+              PROOFREADING WORKSPACE
             </span>
-            <span className="bg-blue-50 text-blue-800 text-[11px] font-semibold px-2 py-0.5 rounded">
-              {activeSubmission.market}
+            <span className="text-[#D8D5CE]">/</span>
+            <span className="text-xs font-mono uppercase text-[#171717]">
+              {activeSubmission.channel} • {activeSubmission.market}
             </span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-slate-500">
-            <span>By {activeSubmission.submittedBy}</span>
+
+          <h1 className="font-serif text-2xl sm:text-3xl text-[#171717] tracking-tight">
+            {activeSubmission.title}
+          </h1>
+
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[#73716B] font-mono mt-1.5">
+            <span>BY: {activeSubmission.submittedBy}</span>
             <span>•</span>
-            <span>Last reviewed: {activeSubmission.updatedAt}</span>
+            <span>UPDATED: {activeSubmission.updatedAt}</span>
             <span>•</span>
-            <span className="font-mono text-[11px] text-slate-400">
-              Initial Hash: {activeSubmission.initialContentHash.slice(0, 12)}
-            </span>
+            <span>INITIAL HASH: {activeSubmission.initialContentHash.slice(0, 10)}</span>
           </div>
         </div>
 
         {/* Global Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           {acceptedCount > 0 && (
             <button
               onClick={() => applyAllAcceptedFixes(activeSubmission.id)}
-              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm transition-all transform hover:scale-[1.02]"
+              className="flex items-center gap-2 bg-[#2D5A38] hover:bg-[#23472c] text-[#F7F6F2] text-xs font-medium px-4 py-2 border border-[#2D5A38] transition-colors"
               id="btn-apply-fixes"
             >
-              <CheckCheck className="w-3.5 h-3.5" />
-              <span>Apply All Accepted Corrections ({acceptedCount})</span>
+              <Check className="w-3.5 h-3.5" />
+              <span>Apply All Accepted ({acceptedCount})</span>
             </button>
           )}
 
           <button
             onClick={handleRunFreshReview}
             disabled={isReviewing}
-            className="flex items-center gap-1.5 bg-navy-800 hover:bg-navy-900 text-white text-xs px-3 py-2 rounded-xl transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 border border-[#D8D5CE] text-[#171717] hover:border-[#171717] text-xs px-3.5 py-2 bg-transparent transition-colors disabled:opacity-50"
           >
             <RotateCcw className={`w-3.5 h-3.5 ${isReviewing ? 'animate-spin' : ''}`} />
-            <span>{isReviewing ? 'Reviewing...' : 'Re-run Review'}</span>
+            <span>{isReviewing ? 'Evaluating...' : 'Re-verify Heuristics'}</span>
           </button>
 
           {/* Publication Approval Action */}
@@ -251,96 +243,98 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
             <button
               onClick={() => {
                 const reason = prompt(
-                  'Enter approval compliance rationale (Required for legal audit trail):',
-                  'Verified against Q4 Brand Guidelines and GDPR compliance documents.'
+                  'Enter approval compliance rationale (Recorded permanently in the forensic audit ledger):',
+                  'Verified against corporate brand guidelines and certified factual sources.'
                 );
                 if (reason) approveSubmission(activeSubmission.id, reason);
               }}
-              className="flex items-center gap-1.5 bg-[#FFD60A] hover:bg-[#ffe043] text-[#14284B] font-bold text-xs px-4 py-2 rounded-xl shadow-md transition-all"
+              className="flex items-center gap-2 bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] text-xs font-medium px-4 py-2 border border-[#171717] transition-colors"
               id="btn-approve-draft"
             >
-              <FileCheck className="w-3.5 h-3.5 text-[#14284B]" />
-              <span>Approve Draft (Sign Off)</span>
+              <Check className="w-3.5 h-3.5 text-[#9B382B]" />
+              <span>Sign Off & Seal Draft</span>
             </button>
           ) : (
-            <div className="flex items-center gap-1 text-[11px] text-slate-500 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
-              <Lock className="w-3 h-3 text-slate-400" />
-              <span>Creator View (Approval requires Brand Manager / Legal role)</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#73716B] border border-[#D8D5CE] bg-[#F7F6F2] px-3 py-2">
+              <Lock className="w-3 h-3 text-[#73716B]" />
+              <span>Creator Role: Sign-off requires Brand Manager or Legal</span>
             </div>
           )}
         </div>
       </div>
 
       {/* Main Two-Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* Left Column: Draft Content with Color Highlighted Spans */}
-        <div className="lg:col-span-7 space-y-3">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-            <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Proof Manuscript Sheet */}
+        <div className="lg:col-span-7 space-y-4">
+          <div className="border border-[#D8D5CE] bg-[#FFFFFF]">
+            <div className="p-4 border-b border-[#D8D5CE] bg-[#F7F6F2] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="font-heading font-bold text-xs text-navy-900 uppercase tracking-wider">
-                  Draft Content Inspection
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+                  MANUSCRIPT PROOF
                 </span>
-                <span className="text-[11px] text-slate-500">
-                  (Click any highlight to focus its reasoning chain)
+                <span className="text-xs text-[#73716B]">
+                  (Select highlighted text to open forensic reasoning)
                 </span>
               </div>
-              <div className="flex items-center gap-1 text-[11px] text-slate-500 font-medium">
+
+              <div className="flex items-center gap-3 text-[10px] font-mono uppercase text-[#73716B]">
                 <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" /> Critical
+                  <span className="w-2 h-2 bg-[#9B382B] inline-block" /> Critical
                 </span>
-                <span className="flex items-center gap-1 ml-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block" /> High
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-[#8C6228] inline-block" /> High
                 </span>
-                <span className="flex items-center gap-1 ml-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block" /> Med
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-[#73716B] inline-block" /> Medium
                 </span>
               </div>
             </div>
 
-            <div className="p-5 min-h-[360px] bg-white leading-relaxed select-text">
+            <div className="p-8 sm:p-10 min-h-[380px] leading-relaxed select-text font-serif text-base sm:text-lg">
               {renderHighlightedContent()}
             </div>
 
-            <div className="p-3 bg-slate-50/80 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
-              <span>{findings.length} total findings detected</span>
-              <span className="italic text-[11px]">
-                "AI findings never grant publication permission."
+            <div className="p-3.5 border-t border-[#D8D5CE] bg-[#F7F6F2] flex items-center justify-between text-xs text-[#73716B] font-mono">
+              <span>{findings.length} findings recorded</span>
+              <span className="text-[10px] uppercase tracking-wider">
+                Automated heuristics never seal or publish
               </span>
             </div>
           </div>
 
-          {/* Readiness Meter for this Submission */}
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+          {/* Publication Readiness Meter */}
+          <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-navy-900 uppercase tracking-wider">
-                  Publication Readiness Score:
+                <span className="text-xs font-mono uppercase tracking-widest text-[#73716B]">
+                  PUBLICATION READINESS:
                 </span>
                 <span
-                  className={`text-xs font-extrabold px-2 py-0.5 rounded-full ${
+                  className={`text-xs font-mono uppercase font-semibold px-2 py-0.5 border ${
                     activeSubmission.readinessStatus === 'Ready to publish'
-                      ? 'bg-emerald-100 text-emerald-800'
+                      ? 'border-[#2D5A38] text-[#2D5A38] bg-[#EEF4EF]'
                       : activeSubmission.readinessStatus === 'Blocked'
-                      ? 'bg-rose-100 text-rose-800'
-                      : 'bg-amber-100 text-amber-800'
+                      ? 'border-[#9B382B] text-[#9B382B] bg-[#F6ECEB]'
+                      : 'border-[#8C6228] text-[#8C6228] bg-[#F7F2E8]'
                   }`}
                 >
-                  {activeSubmission.readinessStatus} ({activeSubmission.readinessScore}%)
+                  {activeSubmission.readinessStatus} — {activeSubmission.readinessScore}%
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Computed dynamically from open findings, severity weighting, and unverified claims.
+              <p className="text-[11px] text-[#73716B] mt-1">
+                Calculated deterministically from open violations, severity penalties, and ungrounded statements.
               </p>
             </div>
-            <div className="w-48 bg-slate-100 h-3 rounded-full overflow-hidden border border-slate-200">
+
+            <div className="w-48 bg-[#EAE6DB] h-1.5 overflow-hidden">
               <div
                 className={`h-full transition-all duration-300 ${
                   activeSubmission.readinessScore >= 90
-                    ? 'bg-emerald-500'
+                    ? 'bg-[#2D5A38]'
                     : activeSubmission.readinessScore >= 50
-                    ? 'bg-amber-500'
-                    : 'bg-rose-500'
+                    ? 'bg-[#8C6228]'
+                    : 'bg-[#9B382B]'
                 }`}
                 style={{ width: `${activeSubmission.readinessScore}%` }}
               />
@@ -348,18 +342,18 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
           </div>
         </div>
 
-        {/* Right Column: Reasoning Chain Hero Panel */}
-        <div className="lg:col-span-5 space-y-3">
-          {/* Severity Filter Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1">
+        {/* Right Column: Reasoning Chain Dossier */}
+        <div className="lg:col-span-5 space-y-4">
+          {/* Severity Filter Tabs */}
+          <div className="flex items-center border border-[#D8D5CE] bg-[#FFFFFF] divide-x divide-[#D8D5CE] text-xs font-mono">
             {['all', 'critical', 'high', 'medium', 'low'].map((sev) => (
               <button
                 key={sev}
                 onClick={() => setFilterSeverity(sev)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-colors ${
+                className={`flex-1 py-1.5 text-center uppercase tracking-wider transition-colors ${
                   filterSeverity === sev
-                    ? 'bg-[#14284B] text-white font-bold'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    ? 'bg-[#171717] text-[#F7F6F2] font-semibold'
+                    : 'text-[#5C5B57] hover:text-[#171717] hover:bg-[#F7F6F2]'
                 }`}
               >
                 {sev}
@@ -368,117 +362,109 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
           </div>
 
           {selectedFinding ? (
-            <div className="bg-white rounded-2xl border-2 border-navy-900/15 shadow-lg overflow-hidden">
+            <div className="border border-[#171717] bg-[#FFFFFF]">
               {/* Finding Header */}
-              <div className="p-4 bg-gradient-to-r from-navy-900 to-navy-800 text-white">
-                <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="p-4 bg-[#171717] text-[#F7F6F2]">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
-                    {/* SEPARATE SEVERITY BADGE */}
                     <span
-                      className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full tracking-wider ${
+                      className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border ${
                         selectedFinding.severity === 'Critical'
-                          ? 'bg-red-500 text-white shadow-sm'
+                          ? 'border-[#9B382B] text-[#F7F6F2] bg-[#9B382B]'
                           : selectedFinding.severity === 'High'
-                          ? 'bg-orange-500 text-white shadow-sm'
-                          : selectedFinding.severity === 'Medium'
-                          ? 'bg-yellow-400 text-navy-900 shadow-sm'
-                          : 'bg-blue-400 text-white shadow-sm'
+                          ? 'border-[#8C6228] text-[#F7F6F2] bg-[#8C6228]'
+                          : 'border-[#73716B] text-[#F7F6F2] bg-[#73716B]'
                       }`}
                     >
-                      Severity: {selectedFinding.severity}
+                      {selectedFinding.severity}
                     </span>
 
-                    {/* SEPARATE CONFIDENCE BADGE */}
-                    <span className="text-[10px] font-bold bg-white/20 text-blue-100 px-2 py-0.5 rounded-full">
-                      Confidence: {selectedFinding.confidence}%
+                    <span className="text-[10px] font-mono border border-white/20 text-[#D8D5CE] px-2 py-0.5">
+                      CONF: {selectedFinding.confidence}%
                     </span>
 
-                    {/* ORIGIN BADGE */}
-                    <span className="text-[10px] font-medium bg-blue-900/80 text-blue-200 px-2 py-0.5 rounded-full border border-blue-400/30">
+                    <span className="text-[10px] font-mono text-[#D8D5CE] uppercase">
                       {selectedFinding.origin}
                     </span>
                   </div>
 
-                  {/* Auto-routed escalation tag if critical or high */}
                   {(selectedFinding.severity === 'Critical' || selectedFinding.severity === 'High') && (
-                    <span className="text-[10px] font-extrabold bg-amber-400 text-navy-950 px-2 py-0.5 rounded uppercase">
-                      Escalated to Human
+                    <span className="text-[10px] font-mono uppercase text-[#9B382B] bg-[#FFFFFF] px-1.5 py-0.5 font-bold">
+                      HUMAN ESCALATION REQUIRED
                     </span>
                   )}
                 </div>
 
-                <h3 className="font-heading font-bold text-sm leading-snug">
+                <h3 className="font-serif text-lg leading-snug">
                   {selectedFinding.ruleName}
                 </h3>
               </div>
 
-              {/* Exact Reasoning Chain */}
-              <div className="p-4 space-y-3.5 text-xs max-h-[580px] overflow-y-auto">
+              {/* Exact 6-Step Reasoning Chain */}
+              <div className="p-5 space-y-4 text-xs max-h-[620px] overflow-y-auto">
                 {/* 1. Original Claim */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                    1. Original Claim
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] block">
+                    01 // ORIGINAL MANUSCRIPT CLAIM
                   </span>
-                  <div className="p-2.5 bg-slate-100 rounded-xl font-medium text-slate-900 border border-slate-200">
+                  <div className="p-3 bg-[#F7F6F2] border border-[#D8D5CE] font-serif text-sm text-[#171717]">
                     "{selectedFinding.reasoning.originalClaim}"
                   </div>
                 </div>
 
                 {/* 2. Applicable Rule */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                    2. Applicable Rule
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] block">
+                    02 // APPLICABLE GOVERNANCE DIRECTIVE
                   </span>
-                  <div className="p-2.5 bg-blue-50/70 text-navy-900 rounded-xl border border-blue-100 font-semibold">
+                  <div className="p-3 bg-[#FFFFFF] border border-[#D8D5CE] text-[#171717] font-medium leading-relaxed">
                     {selectedFinding.reasoning.applicableRule}
                   </div>
                 </div>
 
-                {/* 3. Evidence (source + version) */}
+                {/* 3. Evidence */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                    3. Grounded Evidence Source
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] block">
+                    03 // CERTIFIED EVIDENCE RECORD
                   </span>
                   {selectedFinding.reasoning.evidence ? (
                     <div
-                      className={`p-2.5 rounded-xl border text-xs ${
+                      className={`p-3 border text-xs space-y-1 ${
                         selectedFinding.reasoning.evidence.isExpired
-                          ? 'bg-rose-50 border-rose-300 text-rose-900'
+                          ? 'border-[#9B382B] bg-[#F6ECEB] text-[#9B382B]'
                           : selectedFinding.reasoning.evidence.hasConflict
-                          ? 'bg-amber-50 border-amber-300 text-amber-900'
-                          : 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                          ? 'border-[#8C6228] bg-[#F7F2E8] text-[#8C6228]'
+                          : 'border-[#2D5A38] bg-[#EEF4EF] text-[#2D5A38]'
                       }`}
                     >
-                      <div className="flex items-center justify-between font-bold">
+                      <div className="flex items-center justify-between font-semibold">
                         <span>{selectedFinding.reasoning.evidence.sourceTitle}</span>
-                        <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-white/70">
+                        <span className="font-mono text-[10px] border border-current px-1.5 py-0.2">
                           {selectedFinding.reasoning.evidence.version}
                         </span>
                       </div>
-                      <div className="text-[11px] mt-0.5 text-slate-600">
-                        Source Ref ID: {selectedFinding.reasoning.evidence.sourceId}
+                      <div className="font-mono text-[10px] opacity-80">
+                        REF ID: {selectedFinding.reasoning.evidence.sourceId}
                       </div>
 
-                      {/* Expired warning */}
                       {selectedFinding.reasoning.evidence.isExpired && (
-                        <div className="mt-1.5 text-[11px] font-bold text-red-700 bg-red-100 p-1.5 rounded flex items-center gap-1">
+                        <div className="mt-2 text-[10px] font-mono uppercase tracking-wider flex items-center gap-1 font-bold">
                           <AlertTriangle className="w-3.5 h-3.5" />
-                          <span>EXPIRED SOURCE: Excluded from publication claims.</span>
+                          <span>EXPIRED SOURCE: BANNED FROM PUBLIC CLAIMS</span>
                         </div>
                       )}
 
-                      {/* Conflict warning */}
                       {selectedFinding.reasoning.evidence.hasConflict && (
-                        <div className="mt-1.5 text-[11px] font-semibold text-amber-800 bg-amber-100 p-1.5 rounded">
+                        <div className="mt-2 text-[11px] leading-tight">
                           {selectedFinding.reasoning.evidence.conflictNote}
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div className="p-2.5 bg-amber-50/80 border border-amber-200 rounded-xl text-amber-800">
-                      <span className="font-semibold">No approved evidence on file.</span>
-                      <p className="text-[11px] mt-0.5 italic">
-                        "Missing evidence is not proof the claim is false."
+                    <div className="p-3 border border-[#D8D5CE] bg-[#F7F6F2] text-[#8C6228]">
+                      <span className="font-medium">No verified evidence source found on file.</span>
+                      <p className="text-[11px] mt-0.5 italic text-[#73716B]">
+                        "Absence of certified proof halts public superlative claims."
                       </p>
                     </div>
                   )}
@@ -486,18 +472,18 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
 
                 {/* 4. Explanation */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                    4. Governance Explanation
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] block">
+                    04 // REASONING & COMPLIANCE RATIONALE
                   </span>
-                  <p className="text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p className="text-[#5C5B57] leading-relaxed bg-[#FFFFFF] p-3 border border-[#D8D5CE]">
                     {selectedFinding.reasoning.explanation}
                   </p>
                 </div>
 
-                {/* 5. Suggested Correction Diff (minimal change) */}
+                {/* 5. Suggested Correction Diff */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                    5. Suggested Minimal-Change Correction
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] block">
+                    05 // PROPOSED REDLINE CORRECTION
                   </span>
                   <DiffViewer
                     original={selectedFinding.targetText}
@@ -506,31 +492,30 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
                 </div>
 
                 {/* 6. Human Decision Chain */}
-                <div className="pt-2 border-t border-slate-200 space-y-2">
+                <div className="pt-3 border-t border-[#D8D5CE] space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-navy-900 flex items-center gap-1">
-                      <UserCheck className="w-3.5 h-3.5 text-navy-800" />
-                      6. Human Decision Record (Required)
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#171717]">
+                      06 // HUMAN ARBITRATION RECORD
                     </span>
                     {selectedFinding.humanDecision && (
-                      <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">
-                        Decided: {selectedFinding.humanDecision.status}
+                      <span className="border border-[#2D5A38] text-[#2D5A38] bg-[#EEF4EF] font-mono text-[10px] px-2 py-0.5 uppercase">
+                        {selectedFinding.humanDecision.status}
                       </span>
                     )}
                   </div>
 
                   {selectedFinding.humanDecision ? (
-                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
-                      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-700">
-                        <span>By {selectedFinding.humanDecision.decidedBy} ({selectedFinding.humanDecision.role})</span>
-                        <span className="text-slate-400">{selectedFinding.humanDecision.timestamp}</span>
+                    <div className="bg-[#F7F6F2] p-3 border border-[#D8D5CE] space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px] font-mono text-[#73716B]">
+                        <span>BY: {selectedFinding.humanDecision.decidedBy} ({selectedFinding.humanDecision.role})</span>
+                        <span>{selectedFinding.humanDecision.timestamp}</span>
                       </div>
-                      <p className="text-slate-800 italic text-xs">
+                      <p className="text-[#171717] font-serif italic text-sm">
                         "{selectedFinding.humanDecision.reason}"
                       </p>
                       {selectedFinding.humanDecision.customReplacement && (
-                        <p className="text-emerald-700 font-semibold text-[11px]">
-                          Custom Replacement: "{selectedFinding.humanDecision.customReplacement}"
+                        <p className="text-[#2D5A38] font-mono text-[11px]">
+                          CUSTOM REPLACEMENT: "{selectedFinding.humanDecision.customReplacement}"
                         </p>
                       )}
                       <button
@@ -538,31 +523,31 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
                           setDecisionReason(selectedFinding.humanDecision?.reason || '');
                           selectedFinding.humanDecision = undefined;
                         }}
-                        className="text-[11px] text-blue-600 hover:underline pt-1 block"
+                        className="text-[11px] text-[#9B382B] underline underline-offset-4 pt-1 block font-mono"
                       >
-                        Change this decision
+                        Revise this decision
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div className="space-y-3 bg-[#F7F6F2] p-3.5 border border-[#D8D5CE]">
                       {/* Reason input (Mandatory) */}
                       <div>
-                        <label className="text-[11px] font-bold text-slate-700 block mb-1">
-                          Recorded Justification <span className="text-red-500">*</span>
+                        <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block mb-1">
+                          Recorded Justification <span className="text-[#9B382B]">*</span>
                         </label>
                         <input
                           type="text"
                           value={decisionReason}
                           onChange={(e) => setDecisionReason(e.target.value)}
-                          placeholder="e.g. Approved rebrand replacement per Q1 Brand Kit."
-                          className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                          placeholder="e.g. Approved rebranding replacement per Q1 Brand Kit."
+                          className="w-full text-xs px-3 py-2 border border-[#D8D5CE] bg-[#FFFFFF] text-[#171717] focus:border-[#171717] focus:outline-none"
                         />
                       </div>
 
                       {/* Custom correction toggle */}
                       {showEditInput && (
                         <div>
-                          <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block mb-1">
                             Custom Replacement Text
                           </label>
                           <input
@@ -570,18 +555,18 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
                             value={customCorrection}
                             onChange={(e) => setCustomCorrection(e.target.value)}
                             placeholder={selectedFinding.reasoning.suggestedCorrection}
-                            className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                            className="w-full text-xs px-3 py-2 border border-[#D8D5CE] bg-[#FFFFFF] text-[#171717] focus:border-[#171717] focus:outline-none"
                           />
                         </div>
                       )}
 
                       {/* Decision buttons */}
-                      <div className="grid grid-cols-2 gap-1.5 pt-1">
+                      <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
                         <button
                           onClick={() => handleDecision('accepted')}
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-2 rounded-lg text-xs shadow-sm transition-colors flex items-center justify-center gap-1"
+                          className="bg-[#2D5A38] hover:bg-[#22442a] text-[#F7F6F2] py-2 px-2 transition-colors flex items-center justify-center gap-1.5"
                         >
-                          <CheckCircle className="w-3.5 h-3.5" /> Accept Fix
+                          <Check className="w-3.5 h-3.5" /> Accept Fix
                         </button>
 
                         <button
@@ -591,21 +576,21 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
                               handleDecision('edited');
                             }
                           }}
-                          className="bg-navy-800 hover:bg-navy-900 text-white font-bold py-1.5 px-2 rounded-lg text-xs shadow-sm transition-colors flex items-center justify-center gap-1"
+                          className="bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] py-2 px-2 transition-colors flex items-center justify-center gap-1.5"
                         >
-                          <Edit3 className="w-3.5 h-3.5" /> {showEditInput ? 'Save Custom' : 'Edit Fix'}
+                          <Edit3 className="w-3.5 h-3.5" /> {showEditInput ? 'Save Edit' : 'Edit Fix'}
                         </button>
 
                         <button
                           onClick={() => handleDecision('disputed')}
-                          className="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold py-1.5 px-2 rounded-lg text-xs transition-colors"
+                          className="border border-[#D8D5CE] hover:border-[#171717] bg-[#FFFFFF] text-[#171717] py-2 px-2 transition-colors"
                         >
                           Dispute Finding
                         </button>
 
                         <button
                           onClick={() => handleDecision('escalated')}
-                          className="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-1.5 px-2 rounded-lg text-xs transition-colors border border-amber-300"
+                          className="border border-[#8C6228] bg-[#F7F2E8] text-[#8C6228] py-2 px-2 transition-colors font-semibold"
                         >
                           Escalate to Legal
                         </button>
@@ -616,10 +601,10 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-8 text-center border border-slate-200">
-              <CheckCircle className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
-              <p className="text-sm font-bold text-navy-900">All findings reviewed</p>
-              <p className="text-xs text-slate-500">Draft is clean or all corrections applied.</p>
+            <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-10 text-center space-y-2">
+              <Check className="w-8 h-8 text-[#2D5A38] mx-auto mb-1" />
+              <p className="font-serif text-lg text-[#171717]">All findings reviewed</p>
+              <p className="text-xs text-[#73716B]">Draft meets verified criteria or all changes have been enacted.</p>
             </div>
           )}
         </div>

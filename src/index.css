@@ -4,78 +4,100 @@
 
 @layer base {
   body {
-    background-color: #DCE6F0;
-    color: #0f172a;
+    background-color: #F7F6F2;
+    color: #171717;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.011em;
   }
 
-  h1, h2, h3, .font-heading {
-    font-family: 'Bitter', 'Source Serif Pro', Georgia, serif;
+  h1, h2, h3, .font-heading, .font-serif {
+    font-family: 'Instrument Serif', 'DM Serif Display', Georgia, serif;
+    font-weight: 400;
   }
 }
 
-/* Custom Highlight Spans for Review Workspace */
+/* Editorial Minimal Highlight Spans for Review Workspace */
 .mark-critical {
-  background-color: rgba(239, 68, 68, 0.22);
-  border-bottom: 2px solid #dc2626;
-  border-radius: 2px;
-  padding: 1px 2px;
+  background-color: #F8EBE9;
+  border-bottom: 1.5px solid #9B382B;
+  color: #171717;
+  padding: 1px 3px;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
 }
 .mark-critical:hover, .mark-critical.selected {
-  background-color: rgba(239, 68, 68, 0.4);
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.5);
+  background-color: #EED5D2;
+  box-shadow: 0 0 0 1px #9B382B;
 }
 
 .mark-high {
-  background-color: rgba(249, 115, 22, 0.22);
-  border-bottom: 2px solid #ea580c;
-  border-radius: 2px;
-  padding: 1px 2px;
+  background-color: #F6EDE1;
+  border-bottom: 1.5px solid #8C6228;
+  color: #171717;
+  padding: 1px 3px;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
 }
 .mark-high:hover, .mark-high.selected {
-  background-color: rgba(249, 115, 22, 0.4);
-  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.5);
+  background-color: #ECD8BF;
+  box-shadow: 0 0 0 1px #8C6228;
 }
 
 .mark-medium {
-  background-color: rgba(234, 179, 8, 0.25);
-  border-bottom: 2px solid #ca8a04;
-  border-radius: 2px;
-  padding: 1px 2px;
+  background-color: #F4F1E8;
+  border-bottom: 1.5px solid #73716B;
+  color: #171717;
+  padding: 1px 3px;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
 }
 .mark-medium:hover, .mark-medium.selected {
-  background-color: rgba(234, 179, 8, 0.45);
-  box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.5);
+  background-color: #E8E3D3;
+  box-shadow: 0 0 0 1px #73716B;
 }
 
 .mark-low {
-  background-color: rgba(59, 130, 246, 0.18);
-  border-bottom: 2px solid #2563eb;
-  border-radius: 2px;
-  padding: 1px 2px;
+  background-color: #ECEFF1;
+  border-bottom: 1.5px solid #455A64;
+  color: #171717;
+  padding: 1px 3px;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
 }
 .mark-low:hover, .mark-low.selected {
-  background-color: rgba(59, 130, 246, 0.35);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+  background-color: #CFD8DC;
+  box-shadow: 0 0 0 1px #455A64;
 }
 
-/* Glass and subtle card shadows */
-.card-glass {
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(20, 40, 75, 0.1);
+/* Minimal Editorial Card & Container Utilities */
+.editorial-card {
+  background: #FFFFFF;
+  border: 1px solid #D8D5CE;
+  border-radius: 2px;
 }
 
-/* Focus styles for WCAG 2.2 */
+.editorial-divider {
+  border-color: #D8D5CE;
+}
+
+/* Subtle, tasteful custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F6F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D5CE;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B8B4AA;
+}
+
+/* Focus styles for WCAG 2.2 accessibility */
 :focus-visible {
-  outline: 2px solid #14284B;
+  outline: 1.5px solid #171717;
   outline-offset: 2px;
 }

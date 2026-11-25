@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useBrand } from '../context/BrandContext';
 import { SAMPLE_DRAFTS } from '../data/seedData';
-import { Sparkles, Send, FileEdit, CheckCircle2, RotateCcw, AlertCircle } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { createNewSubmission, runReviewOnSubmission, showToast } = useBrand();
 
   const [title, setTitle] = useState<string>('Q4 Product Launch & Platform Update Announcement');
-  const [brand, setBrand] = useState<string>('Nimbus Analytics');
+  const brand = 'Nimbus Analytics';
   const [channel, setChannel] = useState<'LinkedIn' | 'Website' | 'Email' | 'Press' | 'Twitter/X'>('LinkedIn');
   const [market, setMarket] = useState<'US' | 'EU' | 'India' | 'Global'>('EU');
   const [content, setContent] = useState<string>(SAMPLE_DRAFTS.messy.content);
@@ -53,63 +53,72 @@ export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ o
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-8 sm:p-10 space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pb-6 border-b border-[#D8D5CE]">
           <div>
-            <h1 className="font-heading font-bold text-xl text-navy-900">Submit Content for Governance Review</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Input copy with channel and regional target parameters before public release.
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+              INTAKE PROTOCOL // 03
+            </span>
+            <h1 className="font-serif text-3xl text-[#171717] mt-1">
+              Submit Copy for Governance Review
+            </h1>
+            <p className="text-xs text-[#73716B] mt-1">
+              Supply draft content, target medium, and regulatory jurisdiction before public issuance.
             </p>
           </div>
 
           {/* Quick presets */}
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase">Presets:</span>
+          <div className="flex items-center gap-1.5 font-mono text-xs">
+            <span className="text-[10px] uppercase tracking-wider text-[#73716B] mr-1">PRESETS:</span>
             <button
               type="button"
               onClick={() => loadPreset('messy')}
-              className="bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors border border-amber-300"
+              className="border border-[#8C6228] bg-[#F7F2E8] text-[#8C6228] hover:bg-[#8C6228] hover:text-[#F7F6F2] text-xs px-2.5 py-1 transition-colors"
             >
-              Messy (Demo)
+              Demo Messy
             </button>
             <button
               type="button"
               onClick={() => loadPreset('risky')}
-              className="bg-red-50 hover:bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors border border-red-200"
+              className="border border-[#9B382B] bg-[#F6ECEB] text-[#9B382B] hover:bg-[#9B382B] hover:text-[#F7F6F2] text-xs px-2.5 py-1 transition-colors"
             >
               Risky Claims
             </button>
             <button
               type="button"
               onClick={() => loadPreset('clean')}
-              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors border border-emerald-200"
+              className="border border-[#2D5A38] bg-[#EEF4EF] text-[#2D5A38] hover:bg-[#2D5A38] hover:text-[#F7F6F2] text-xs px-2.5 py-1 transition-colors"
             >
               Clean
             </button>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-2">
-              <label className="text-xs font-bold text-slate-700 block mb-1">Submission Title</label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+            <div className="md:col-span-2 space-y-1.5">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block">
+                Submission Title
+              </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                className="w-full text-xs px-3.5 py-2.5 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
                 placeholder="e.g. Q4 Platform Release Announcement"
               />
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Target Channel</label>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block">
+                Target Medium
+              </label>
               <select
                 value={channel}
                 onChange={(e: any) => setChannel(e.target.value)}
-                className="w-full text-xs px-3 py-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                className="w-full text-xs px-3 py-2.5 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
               >
                 <option value="LinkedIn">LinkedIn Post</option>
                 <option value="Website">Website / Blog</option>
@@ -119,12 +128,14 @@ export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ o
               </select>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Regional Market</label>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block">
+                Jurisdiction
+              </label>
               <select
                 value={market}
                 onChange={(e: any) => setMarket(e.target.value)}
-                className="w-full text-xs px-3 py-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                className="w-full text-xs px-3 py-2.5 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
               >
                 <option value="EU">European Union (GDPR Strict)</option>
                 <option value="US">United States (FTC / SEC)</option>
@@ -134,42 +145,44 @@ export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ o
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-bold text-slate-700">Content / Social Copy</label>
-              <span className="text-[11px] text-slate-400">{content.length} characters</span>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717]">
+                Draft Manuscript Copy
+              </label>
+              <span className="text-[10px] font-mono text-[#73716B]">{content.length} characters</span>
             </div>
             <textarea
-              rows={8}
+              rows={9}
               required
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full text-xs font-sans p-3.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none leading-relaxed"
+              className="w-full text-sm font-sans p-4 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none leading-relaxed"
               placeholder="Paste draft copy, marketing announcement, or social copy..."
             />
           </div>
 
           {/* Review execution button with loading states */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-            <div className="text-xs text-slate-500 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Grounded in Nimbus Knowledge Base v2.1</span>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-[#D8D5CE]">
+            <div className="text-xs font-mono text-[#73716B] flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-[#2D5A38]" />
+              <span>EVALUATION ENGINE: NIMBUS CORPUS V2.4</span>
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 bg-[#14284B] hover:bg-navy-950 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-lg transition-transform hover:scale-[1.02] disabled:opacity-50"
+              className="flex items-center justify-center gap-2 bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] text-xs font-medium px-6 py-3 border border-[#171717] transition-colors disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-[#FFD60A] border-t-transparent rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 border-2 border-[#F7F6F2] border-t-transparent animate-spin" />
                   <span>{stepMessage}</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-[#FFD60A]" />
-                  <span>Run Governance Review</span>
+                  <span className="w-1.5 h-1.5 bg-[#9B382B]" />
+                  <span>Execute Verification Run</span>
                 </>
               )}
             </button>
@@ -177,20 +190,20 @@ export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ o
         </form>
       </div>
 
-      {/* Excluded Roadmap Chips */}
-      <div className="bg-slate-100/80 rounded-2xl p-4 border border-slate-200">
-        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-          Intake Integrations (Tier 2/3 Roadmap):
+      {/* Intake Integrations Ledger */}
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-6 space-y-3">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] block">
+          PIPELINE EXTENSIONS // ROADMAP SPECIFICATION
         </span>
-        <div className="flex flex-wrap gap-2 text-xs">
-          <span className="bg-slate-200 text-slate-500 px-3 py-1 rounded-full border border-slate-300 cursor-not-allowed">
-            PDF / DOCX Intake • Roadmap (Tier 2)
+        <div className="flex flex-wrap gap-2 text-xs font-mono">
+          <span className="border border-[#D8D5CE] text-[#73716B] bg-[#F7F6F2] px-3 py-1">
+            PDF / DOCX Intake • Tier 2
           </span>
-          <span className="bg-slate-200 text-slate-500 px-3 py-1 rounded-full border border-slate-300 cursor-not-allowed">
-            Figma OCR & Asset Matching • Roadmap (Tier 2)
+          <span className="border border-[#D8D5CE] text-[#73716B] bg-[#F7F6F2] px-3 py-1">
+            Figma OCR & Asset Matching • Tier 2
           </span>
-          <span className="bg-slate-200 text-slate-500 px-3 py-1 rounded-full border border-slate-300 cursor-not-allowed">
-            Automated CMS Publishing Webhooks • Roadmap (Tier 3)
+          <span className="border border-[#D8D5CE] text-[#73716B] bg-[#F7F6F2] px-3 py-1">
+            Automated Headless CMS Webhooks • Tier 3
           </span>
         </div>
       </div>

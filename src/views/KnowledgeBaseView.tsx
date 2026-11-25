@@ -1,26 +1,18 @@
 import React, { useState } from 'react';
 import { useBrand } from '../context/BrandContext';
-import { BrandRule, ApprovedFactSource, TerminologyItem } from '../types';
+import { BrandRule } from '../types';
 import {
-  Database,
-  Plus,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  History,
   Lock,
   Edit2,
-  FileText,
-  Search,
-  Filter,
+  AlertTriangle,
+  Clock,
 } from 'lucide-react';
 
 export const KnowledgeBaseView: React.FC = () => {
-  const { rules, facts, terminology, currentRole, addRuleVersion, addFact, addTerminology, showToast } =
+  const { rules, facts, terminology, currentRole, addRuleVersion, showToast } =
     useBrand();
 
   const [activeTab, setActiveTab] = useState<'rules' | 'facts' | 'terminology' | 'sources'>('rules');
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [editingRule, setEditingRule] = useState<BrandRule | null>(null);
   const [ruleEditReason, setRuleEditReason] = useState<string>('');
   const [ruleEditDesc, setRuleEditDesc] = useState<string>('');
@@ -49,55 +41,58 @@ export const KnowledgeBaseView: React.FC = () => {
   const isBrandManager = currentRole === 'brand_manager' || currentRole === 'legal';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Knowledge Base Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-heading font-bold text-xl text-navy-900">Brand Knowledge Base</h1>
-            <span className="text-[11px] font-bold bg-navy-100 text-navy-800 px-2.5 py-0.5 rounded-full">
-              Immutable Versioning
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-8 flex flex-col md:flex-row md:items-baseline md:justify-between gap-6">
+        <div className="space-y-1.5 max-w-2xl">
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+              ARCHIVE // REPOSITORY 04
+            </span>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#2D5A38] border border-[#2D5A38]/30 px-1.5 py-0.2 bg-[#EEF4EF]">
+              IMMUTABLE CORPUS
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Version-controlled repository of governance rules, verified evidence facts, terminology, and legal sources.
-            Edits always create a new version (v1 → v2); records are never overwritten.
+
+          <h1 className="font-serif text-3xl text-[#171717]">Brand Knowledge Base</h1>
+          <p className="text-xs text-[#73716B] leading-relaxed">
+            Version-controlled repository of governance rules, verified factual evidence, approved terminology, and legal audits. Every alteration increments version state with permanent audit provenance.
           </p>
         </div>
 
         {/* Tab selection */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
+        <div className="flex items-center border border-[#D8D5CE] bg-[#F7F6F2] p-0.5 shrink-0 font-mono text-xs">
           <button
             onClick={() => setActiveTab('rules')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'rules' ? 'bg-white text-navy-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`px-3 py-1.5 transition-colors ${
+              activeTab === 'rules' ? 'bg-[#171717] text-[#F7F6F2] font-medium' : 'text-[#5C5B57] hover:text-[#171717]'
             }`}
           >
-            Brand Rules ({rules.length})
+            Rules ({rules.length})
           </button>
           <button
             onClick={() => setActiveTab('facts')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'facts' ? 'bg-white text-navy-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`px-3 py-1.5 transition-colors ${
+              activeTab === 'facts' ? 'bg-[#171717] text-[#F7F6F2] font-medium' : 'text-[#5C5B57] hover:text-[#171717]'
             }`}
           >
-            Approved Facts ({facts.length})
+            Evidence ({facts.length})
           </button>
           <button
             onClick={() => setActiveTab('terminology')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'terminology' ? 'bg-white text-navy-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`px-3 py-1.5 transition-colors ${
+              activeTab === 'terminology' ? 'bg-[#171717] text-[#F7F6F2] font-medium' : 'text-[#5C5B57] hover:text-[#171717]'
             }`}
           >
-            Terminology ({terminology.length})
+            Lexicon ({terminology.length})
           </button>
           <button
             onClick={() => setActiveTab('sources')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'sources' ? 'bg-white text-navy-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`px-3 py-1.5 transition-colors ${
+              activeTab === 'sources' ? 'bg-[#171717] text-[#F7F6F2] font-medium' : 'text-[#5C5B57] hover:text-[#171717]'
             }`}
           >
-            Sources & Audits
+            Audits
           </button>
         </div>
       </div>
@@ -105,41 +100,34 @@ export const KnowledgeBaseView: React.FC = () => {
       {/* Rules Tab */}
       {activeTab === 'rules' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="text-xs text-slate-500">
-              Showing active brand governance rules. Only Brand Managers can publish new versions.
-            </div>
+          <div className="flex items-center justify-between font-mono text-xs text-[#73716B]">
+            <span>Active heuristic criteria. Authorized edits require Brand Manager or Legal authority.</span>
             {!isBrandManager && (
-              <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg flex items-center gap-1">
-                <Lock className="w-3 h-3 text-slate-400" /> Read-only (Creator View)
+              <span className="flex items-center gap-1.5 border border-[#D8D5CE] px-2 py-0.5 bg-[#FFFFFF]">
+                <Lock className="w-3 h-3 text-[#73716B]" />
+                <span>READ-ONLY VIEW</span>
               </span>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {rules.map((rule) => (
               <div
                 key={rule.id}
-                className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-300 transition-colors"
+                className="border border-[#D8D5CE] bg-[#FFFFFF] p-6 flex flex-col justify-between hover:border-[#171717] transition-colors"
               >
                 <div>
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <span className="font-mono text-[11px] font-bold text-navy-900 bg-navy-50 px-2 py-0.5 rounded border border-navy-100">
-                      {rule.id}
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-mono text-[11px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
-                        {rule.version}
-                      </span>
+                  <div className="flex items-baseline justify-between gap-2 mb-3 border-b border-[#D8D5CE] pb-2 font-mono text-xs">
+                    <span className="text-[#171717] font-semibold">{rule.id}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#73716B]">v{rule.version}</span>
                       <span
-                        className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] uppercase px-1.5 py-0.2 border ${
                           rule.severity === 'Critical'
-                            ? 'bg-red-100 text-red-800'
+                            ? 'border-[#9B382B] text-[#9B382B] bg-[#F6ECEB]'
                             : rule.severity === 'High'
-                            ? 'bg-orange-100 text-orange-800'
-                            : rule.severity === 'Medium'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-blue-100 text-blue-800'
+                            ? 'border-[#8C6228] text-[#8C6228] bg-[#F7F2E8]'
+                            : 'border-[#73716B] text-[#73716B] bg-[#F7F6F2]'
                         }`}
                       >
                         {rule.severity}
@@ -147,22 +135,22 @@ export const KnowledgeBaseView: React.FC = () => {
                     </div>
                   </div>
 
-                  <h3 className="font-heading font-bold text-sm text-navy-900 mb-1">{rule.name}</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-3">{rule.description}</p>
+                  <h3 className="font-serif text-lg text-[#171717] mb-1.5">{rule.name}</h3>
+                  <p className="text-xs text-[#5C5B57] leading-relaxed mb-4">{rule.description}</p>
 
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs mb-3">
-                    <span className="font-bold text-slate-700 text-[11px] uppercase block mb-0.5">
-                      Target Pattern / Restriction:
+                  <div className="bg-[#F7F6F2] p-3 border border-[#D8D5CE] text-xs mb-4">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#73716B] block mb-1">
+                      Matched Pattern / Restriction:
                     </span>
-                    <code className="text-slate-900 font-mono text-[11px]">{rule.patternSummary}</code>
+                    <code className="text-[#171717] font-mono text-[11px] break-all">{rule.patternSummary}</code>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
+                <div className="pt-3 border-t border-[#D8D5CE] text-[11px] font-mono text-[#73716B] flex items-center justify-between">
                   <div>
-                    <span>Owner: {rule.owner}</span>
-                    <span className="mx-1.5">•</span>
-                    <span>Eff: {rule.effectiveDate}</span>
+                    <span>OWNER: {rule.owner}</span>
+                    <span className="mx-2">•</span>
+                    <span>EFF: {rule.effectiveDate}</span>
                   </div>
 
                   {isBrandManager && (
@@ -171,10 +159,10 @@ export const KnowledgeBaseView: React.FC = () => {
                         setEditingRule(rule);
                         setRuleEditDesc(rule.description);
                       }}
-                      className="flex items-center gap-1 text-xs font-bold text-[#14284B] hover:text-navy-950 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg transition-colors"
+                      className="flex items-center gap-1.5 text-xs text-[#171717] hover:underline underline-offset-4"
                     >
                       <Edit2 className="w-3 h-3" />
-                      <span>Bump Version</span>
+                      <span>Increment Version</span>
                     </button>
                   )}
                 </div>
@@ -184,46 +172,43 @@ export const KnowledgeBaseView: React.FC = () => {
         </div>
       )}
 
-      {/* Approved Facts Tab (With Expired and Conflict surfacing) */}
+      {/* Approved Facts Tab */}
       {activeTab === 'facts' && (
         <div className="space-y-4">
-          <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
-            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="p-4 border border-[#8C6228] bg-[#F7F2E8] text-xs text-[#8C6228] flex items-start gap-3">
+            <AlertTriangle className="w-4 h-4 text-[#8C6228] shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold">Time-Aware & Conflict-Surfacing Fact Repository</span>
-              <p className="mt-0.5 text-amber-800">
-                Notice that FACT-003 is marked <strong>Expired</strong> (and thus rejected as current evidence), while
-                FACT-004 and FACT-005 contain a verified telemetry metric conflict that flags human review.
+              <span className="font-mono uppercase tracking-wider font-semibold block">
+                Time-Bound & Provenance Verification Registry
+              </span>
+              <p className="mt-1 leading-relaxed">
+                Fact sources enforce temporal expiration dates and internal telemetry conflict detection. Expired facts (e.g. FACT-003) immediately block unverified public claims until recertified.
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {facts.map((fact) => (
               <div
                 key={fact.id}
-                className={`bg-white rounded-2xl p-5 border shadow-sm flex flex-col justify-between ${
+                className={`border bg-[#FFFFFF] p-6 flex flex-col justify-between ${
                   fact.status === 'Expired'
-                    ? 'border-red-300 bg-red-50/20'
+                    ? 'border-[#9B382B]'
                     : fact.conflictWithId
-                    ? 'border-amber-300 bg-amber-50/20'
-                    : 'border-slate-200'
+                    ? 'border-[#8C6228]'
+                    : 'border-[#D8D5CE]'
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-[11px] font-bold text-navy-900 bg-navy-50 px-2 py-0.5 rounded border border-navy-100">
-                      {fact.id}
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-mono text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                        {fact.version}
-                      </span>
+                  <div className="flex items-baseline justify-between mb-3 border-b border-[#D8D5CE] pb-2 font-mono text-xs">
+                    <span className="text-[#171717] font-semibold">{fact.id}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#73716B]">v{fact.version}</span>
                       <span
-                        className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] uppercase px-1.5 py-0.2 border ${
                           fact.status === 'Active'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-rose-100 text-rose-800'
+                            ? 'border-[#2D5A38] text-[#2D5A38] bg-[#EEF4EF]'
+                            : 'border-[#9B382B] text-[#9B382B] bg-[#F6ECEB]'
                         }`}
                       >
                         {fact.status}
@@ -231,45 +216,45 @@ export const KnowledgeBaseView: React.FC = () => {
                     </div>
                   </div>
 
-                  <p className="font-medium text-xs text-navy-950 mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 leading-relaxed">
+                  <p className="font-serif text-base text-[#171717] mb-3 leading-relaxed">
                     "{fact.fact}"
                   </p>
 
-                  <div className="space-y-1 text-xs mb-3">
-                    <div className="text-slate-600">
-                      <span className="font-semibold text-slate-800">Source:</span> {fact.sourceTitle}
+                  <div className="space-y-1 text-xs mb-3 font-mono text-[#73716B]">
+                    <div>
+                      <span className="text-[#171717]">SOURCE:</span> {fact.sourceTitle}
                     </div>
-                    <div className="text-slate-500 font-mono text-[11px]">
-                      <span className="font-sans font-semibold text-slate-700">Ref ID:</span> {fact.sourceRef}
+                    <div>
+                      <span className="text-[#171717]">REF:</span> {fact.sourceRef}
                     </div>
                   </div>
 
                   {/* Conflict warning */}
                   {fact.conflictWithId && (
-                    <div className="bg-amber-100 text-amber-900 p-2.5 rounded-xl text-xs mb-3 border border-amber-300">
-                      <span className="font-bold flex items-center gap-1">
+                    <div className="border border-[#8C6228] bg-[#F7F2E8] text-[#8C6228] p-3 text-xs mb-3">
+                      <span className="font-mono uppercase font-semibold flex items-center gap-1.5">
                         <AlertTriangle className="w-3.5 h-3.5" /> Conflict Detected:
                       </span>
-                      <p className="text-[11px] mt-0.5">{fact.conflictReason}</p>
+                      <p className="mt-1 text-[11px] leading-relaxed">{fact.conflictReason}</p>
                     </div>
                   )}
 
                   {/* Expired warning */}
                   {fact.status === 'Expired' && (
-                    <div className="bg-rose-100 text-rose-900 p-2.5 rounded-xl text-xs mb-3 border border-rose-300">
-                      <span className="font-bold flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" /> Expired Attribution:
+                    <div className="border border-[#9B382B] bg-[#F6ECEB] text-[#9B382B] p-3 text-xs mb-3">
+                      <span className="font-mono uppercase font-semibold flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" /> Expired Provenance:
                       </span>
-                      <p className="text-[11px] mt-0.5">
-                        Expired on {fact.expiryDate}. Claims citing this badge will be blocked until recertified.
+                      <p className="mt-1 text-[11px] leading-relaxed">
+                        Expired on {fact.expiryDate}. Claims referencing this credential are automatically blocked.
                       </p>
                     </div>
                   )}
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
-                  <span>Owner: {fact.owner}</span>
-                  <span>Expires: {fact.expiryDate}</span>
+                <div className="pt-3 border-t border-[#D8D5CE] text-[11px] font-mono text-[#73716B] flex items-center justify-between">
+                  <span>OWNER: {fact.owner}</span>
+                  <span>EXPIRES: {fact.expiryDate}</span>
                 </div>
               </div>
             ))}
@@ -279,73 +264,82 @@ export const KnowledgeBaseView: React.FC = () => {
 
       {/* Terminology Tab */}
       {activeTab === 'terminology' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-4 bg-slate-50 border-b border-slate-200">
-            <h3 className="font-heading font-bold text-sm text-navy-900">Brand Lexicon & Terminology Mapping</h3>
-            <p className="text-xs text-slate-500">
-              Approved corporate terminology and explicitly banned or deprecated vocabulary.
+        <div className="border border-[#D8D5CE] bg-[#FFFFFF]">
+          <div className="p-6 border-b border-[#D8D5CE] bg-[#F7F6F2]">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+              LEXICON // CANONICAL DICTIONARY
+            </span>
+            <h3 className="font-serif text-2xl text-[#171717] mt-1">Brand Terminology Mapping</h3>
+            <p className="text-xs text-[#73716B] mt-0.5">
+              Authorized organizational vocabulary and deprecated expressions.
             </p>
           </div>
 
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-100/70 text-slate-600 uppercase text-[11px] font-semibold border-b border-slate-200">
-              <tr>
-                <th className="py-3 px-4">Forbidden / Deprecated Term</th>
-                <th className="py-3 px-4">Approved Replacement</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Rationale</th>
-                <th className="py-3 px-4">Version</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {terminology.map((term) => (
-                <tr key={term.id} className="hover:bg-slate-50">
-                  <td className="py-3 px-4 font-mono font-bold text-red-600 bg-red-50/50">
-                    "{term.forbidden}"
-                  </td>
-                  <td className="py-3 px-4 font-bold text-emerald-700 bg-emerald-50/30">
-                    "{term.preferred}"
-                  </td>
-                  <td className="py-3 px-4 text-slate-600 font-medium">{term.category}</td>
-                  <td className="py-3 px-4 text-slate-600">{term.rationale}</td>
-                  <td className="py-3 px-4 font-mono text-slate-500">{term.version}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-[#FFFFFF] text-[#73716B] font-mono uppercase text-[10px] tracking-wider border-b border-[#D8D5CE]">
+                <tr>
+                  <th className="py-3 px-5">Deprecated Term</th>
+                  <th className="py-3 px-5">Authorized Replacement</th>
+                  <th className="py-3 px-5">Category</th>
+                  <th className="py-3 px-5">Policy Rationale</th>
+                  <th className="py-3 px-5">Version</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[#EAE6DB]">
+                {terminology.map((term) => (
+                  <tr key={term.id} className="hover:bg-[#F7F6F2]/70 transition-colors">
+                    <td className="py-4 px-5 font-mono text-[#9B382B] line-through">
+                      "{term.forbidden}"
+                    </td>
+                    <td className="py-4 px-5 font-medium text-[#2D5A38]">
+                      "{term.preferred}"
+                    </td>
+                    <td className="py-4 px-5 font-mono text-[#73716B]">{term.category}</td>
+                    <td className="py-4 px-5 text-[#5C5B57]">{term.rationale}</td>
+                    <td className="py-4 px-5 font-mono text-[#73716B]">v{term.version}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* Sources & Audits Tab */}
       {activeTab === 'sources' && (
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
-          <h3 className="font-heading font-bold text-base text-navy-900">Third-Party Evidence Registries</h3>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            BrandGuard connects each claim to an auditable enterprise artifact. If an audit is challenged by regulators
-            or media, every publication decision maps directly back to the active source file version.
-          </p>
+        <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-8 space-y-6">
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+              AUDIT // EVIDENCE DOSSIERS
+            </span>
+            <h3 className="font-serif text-2xl text-[#171717] mt-1">Third-Party Evidence Registries</h3>
+            <p className="text-xs text-[#73716B] leading-relaxed max-w-2xl mt-1">
+              BrandGuard connects every claim directly to an immutable enterprise artifact. In regulatory inquiries, every published sentence maps to a signed audit source file.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-              <span className="font-bold text-navy-900 block mb-1">SOC 2 Type II Compliance Report</span>
-              <p className="text-slate-600 text-[11px] mb-2">Audited by Ernst & Young LLP • Effective: April 2024</p>
-              <span className="text-emerald-700 font-semibold bg-emerald-100 px-2 py-0.5 rounded text-[10px]">
-                Valid & Verified
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+            <div className="p-5 border border-[#D8D5CE] bg-[#F7F6F2] space-y-2">
+              <span className="font-serif text-base text-[#171717] block">SOC 2 Type II Compliance Report</span>
+              <p className="text-[#73716B] text-[11px] font-mono">Audited by Ernst & Young LLP • April 2024</p>
+              <span className="inline-block border border-[#2D5A38] text-[#2D5A38] bg-[#EEF4EF] px-2 py-0.5 font-mono text-[10px] uppercase">
+                Active & Certified
               </span>
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-              <span className="font-bold text-navy-900 block mb-1">Forrester TEI™ Customer Study</span>
-              <p className="text-slate-600 text-[11px] mb-2">Forrester Research Inc. • Effective: March 2024</p>
-              <span className="text-amber-700 font-semibold bg-amber-100 px-2 py-0.5 rounded text-[10px]">
+            <div className="p-5 border border-[#8C6228] bg-[#F7F2E8] space-y-2">
+              <span className="font-serif text-base text-[#171717] block">Forrester TEI™ Customer Study</span>
+              <p className="text-[#73716B] text-[11px] font-mono">Forrester Research Inc. • March 2024</p>
+              <span className="inline-block border border-[#8C6228] text-[#8C6228] bg-[#FFFFFF] px-2 py-0.5 font-mono text-[10px] uppercase">
                 Internal Conflict Noted
               </span>
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-              <span className="font-bold text-navy-900 block mb-1">Gartner Peer Insights 2022</span>
-              <p className="text-slate-600 text-[11px] mb-2">Customer Choice Badging • Expired Dec 2023</p>
-              <span className="text-rose-700 font-semibold bg-rose-100 px-2 py-0.5 rounded text-[10px]">
+            <div className="p-5 border border-[#9B382B] bg-[#F6ECEB] space-y-2">
+              <span className="font-serif text-base text-[#171717] block">Gartner Peer Insights 2022</span>
+              <p className="text-[#73716B] text-[11px] font-mono">Customer Choice Badging • Expired Dec 2023</p>
+              <span className="inline-block border border-[#9B382B] text-[#9B382B] bg-[#FFFFFF] px-2 py-0.5 font-mono text-[10px] uppercase">
                 Expired / Prohibited
               </span>
             </div>
@@ -353,54 +347,60 @@ export const KnowledgeBaseView: React.FC = () => {
         </div>
       )}
 
-      {/* Version Edit Modal */}
+      {/* Version Edit Modal - Minimal Editorial Form */}
       {editingRule && (
-        <div className="fixed inset-0 bg-navy-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
-            <h3 className="font-heading font-bold text-lg text-navy-900 mb-1">
-              Increment Rule Version ({editingRule.id})
-            </h3>
-            <p className="text-xs text-slate-500 mb-4">
-              Current version {editingRule.version} will be sealed into historical records. A new minor version will be
-              published.
-            </p>
+        <div className="fixed inset-0 bg-[#171717]/60 backdrop-blur-[2px] z-50 flex items-center justify-center p-4">
+          <div className="bg-[#FFFFFF] max-w-lg w-full p-8 border border-[#171717] shadow-2xl space-y-5">
+            <div className="border-b border-[#D8D5CE] pb-3">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+                GOVERNANCE AMENDMENT
+              </span>
+              <h3 className="font-serif text-2xl text-[#171717] mt-1">
+                Increment Rule Version ({editingRule.id})
+              </h3>
+              <p className="text-xs text-[#73716B] mt-1">
+                Version {editingRule.version} will be archived into permanent forensic storage. A new minor version will be minted.
+              </p>
+            </div>
 
-            <form onSubmit={handleSaveRuleVersion} className="space-y-3 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Updated Rule Description</label>
+            <form onSubmit={handleSaveRuleVersion} className="space-y-4 text-xs">
+              <div className="space-y-1">
+                <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block">
+                  Revised Rule Description
+                </label>
                 <textarea
                   rows={3}
                   value={ruleEditDesc}
                   onChange={(e) => setRuleEditDesc(e.target.value)}
-                  className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                  className="w-full text-xs p-3 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
                 />
               </div>
 
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">
-                  Change Log Rationale <span className="text-red-500">*</span>
+              <div className="space-y-1">
+                <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block">
+                  Change Rationale <span className="text-[#9B382B]">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Expanded FTC substantiation clause to include European DMA regulations."
+                  placeholder="e.g. Expanded FTC substantiation clause to include EU DMA regulations."
                   value={ruleEditReason}
                   onChange={(e) => setRuleEditReason(e.target.value)}
-                  className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                  className="w-full text-xs p-3 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#D8D5CE]">
                 <button
                   type="button"
                   onClick={() => setEditingRule(null)}
-                  className="px-3 py-1.5 text-slate-600 hover:text-slate-900"
+                  className="px-3 py-1.5 text-xs text-[#73716B] hover:text-[#171717]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-navy-900 hover:bg-navy-800 text-white font-bold px-4 py-2 rounded-xl"
+                  className="bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] font-medium px-4 py-2 border border-[#171717] transition-colors"
                 >
                   Publish New Version
                 </button>

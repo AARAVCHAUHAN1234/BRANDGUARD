@@ -8,7 +8,6 @@ import {
   History,
   BarChart3,
   Compass,
-  FileCheck2,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -17,7 +16,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
-  const { submissions, activeSubmission, rules, facts } = useBrand();
+  const { submissions, activeSubmission, facts } = useBrand();
 
   const unresolvedFindingsCount = activeSubmission
     ? activeSubmission.findings.filter(
@@ -31,128 +30,151 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
   const navItems = [
     {
       id: 'dashboard',
+      index: '01',
       label: 'Dashboard',
       icon: LayoutDashboard,
       badge: inReviewCount > 0 ? `${inReviewCount} pending` : undefined,
-      badgeColor: 'bg-amber-100 text-amber-800',
     },
     {
       id: 'workspace',
+      index: '02',
       label: 'Review Workspace',
       icon: ShieldAlert,
-      badge: unresolvedFindingsCount > 0 ? `${unresolvedFindingsCount} findings` : 'Clean',
-      badgeColor: unresolvedFindingsCount > 0 ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800',
+      badge: unresolvedFindingsCount > 0 ? `${unresolvedFindingsCount} flags` : 'Clean',
+      badgeAlert: unresolvedFindingsCount > 0,
     },
     {
       id: 'submit',
+      index: '03',
       label: 'Submit Content',
       icon: FileEdit,
     },
     {
       id: 'knowledge',
+      index: '04',
       label: 'Brand Knowledge Base',
       icon: Database,
       badge: expiredSourcesCount > 0 ? `${expiredSourcesCount} expired` : undefined,
-      badgeColor: 'bg-rose-100 text-rose-800',
+      badgeAlert: expiredSourcesCount > 0,
     },
     {
       id: 'approvals',
+      index: '05',
       label: 'Approvals & Audit',
       icon: History,
     },
     {
       id: 'insights',
+      index: '06',
       label: 'Governance Insights',
       icon: BarChart3,
     },
     {
       id: 'roadmap',
-      label: 'Roadmap & Responsible AI',
+      index: '07',
+      label: 'Charter & Principles',
       icon: Compass,
     },
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 shadow-sm min-h-[calc(100vh-65px)]">
-      <div className="py-4 px-3">
-        {/* Active Context Banner */}
-        <div className="mb-4 px-3 py-2.5 bg-[#14284B]/5 rounded-xl border border-[#14284B]/10">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[11px] font-bold text-navy-900 uppercase tracking-wider">
-              Nimbus Analytics
-            </span>
+    <aside className="w-64 bg-[#FFFFFF] border-r border-[#D8D5CE] flex flex-col justify-between shrink-0 min-h-[calc(100vh-57px)]">
+      <div className="p-4 space-y-6">
+        {/* Active Context Dossier */}
+        <div className="border border-[#D8D5CE] bg-[#F7F6F2] p-3.5 space-y-2">
+          <div className="flex items-center justify-between border-b border-[#D8D5CE] pb-2">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">ACTIVE DOSSIER</span>
+            <span className="w-1.5 h-1.5 bg-[#2D5A38]" title="Context Active" />
           </div>
-          <p className="text-xs text-slate-600 line-clamp-1">
-            {activeSubmission ? activeSubmission.title : 'No active draft'}
-          </p>
-          {activeSubmission && (
-            <div className="mt-1 flex items-center gap-1.5 text-[10px] text-slate-500">
-              <span className="font-semibold text-navy-800">{activeSubmission.channel}</span>
-              <span>•</span>
-              <span className="font-semibold text-navy-800">{activeSubmission.market}</span>
-              <span>•</span>
-              <span
-                className={`font-semibold px-1.5 py-0.2 rounded ${
-                  activeSubmission.status === 'Approved'
-                    ? 'bg-emerald-100 text-emerald-800'
-                    : activeSubmission.status === 'Reopened'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-blue-100 text-blue-800'
-                }`}
-              >
-                {activeSubmission.status}
-              </span>
+
+          <div>
+            <div className="text-xs font-semibold text-[#171717] tracking-tight truncate">
+              {activeSubmission ? activeSubmission.title : 'No active draft'}
             </div>
-          )}
+            {activeSubmission && (
+              <div className="mt-2 flex items-center gap-1.5 text-[10px] font-mono text-[#73716B] uppercase tracking-wide">
+                <span>{activeSubmission.channel}</span>
+                <span className="text-[#D8D5CE]">/</span>
+                <span>{activeSubmission.market}</span>
+                <span className="text-[#D8D5CE]">/</span>
+                <span
+                  className={
+                    activeSubmission.status === 'Approved'
+                      ? 'text-[#2D5A38] font-semibold'
+                      : activeSubmission.status === 'Reopened'
+                      ? 'text-[#9B382B] font-semibold'
+                      : 'text-[#171717]'
+                  }
+                >
+                  {activeSubmission.status}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Navigation list */}
-        <nav className="space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentView === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                  isActive
-                    ? 'bg-[#14284B] text-white font-semibold shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon
-                    className={`w-4 h-4 ${
-                      isActive ? 'text-[#FFD60A]' : 'text-slate-400 group-hover:text-slate-600'
-                    }`}
-                  />
-                  <span>{item.label}</span>
-                </div>
-                {item.badge && (
-                  <span
-                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                      isActive ? 'bg-white/20 text-white' : item.badgeColor
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
+        <div>
+          <div className="px-2 mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+              INDEX // DIRECTORY
+            </span>
+          </div>
+
+          <nav className="space-y-0.5">
+            {navItems.map((item) => {
+              const isActive = currentView === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onNavigate(item.id)}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors text-left ${
+                    isActive
+                      ? 'bg-[#171717] text-[#F7F6F2] font-medium'
+                      : 'text-[#5C5B57] hover:text-[#171717] hover:bg-[#F7F6F2]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-[10px] font-mono ${
+                        isActive ? 'text-[#9B382B]' : 'text-[#73716B]'
+                      }`}
+                    >
+                      {item.index}
+                    </span>
+                    <span className="tracking-tight">{item.label}</span>
+                  </div>
+
+                  {item.badge && (
+                    <span
+                      className={`text-[10px] font-mono uppercase tracking-wide ${
+                        isActive
+                          ? 'text-[#D8D5CE]'
+                          : item.badgeAlert
+                          ? 'text-[#9B382B]'
+                          : 'text-[#73716B]'
+                      }`}
+                    >
+                      [{item.badge}]
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
       </div>
 
-      {/* Footer Info & Guarantees */}
-      <div className="p-3 border-t border-slate-200 bg-slate-50/50 m-2 rounded-xl text-xs">
-        <div className="flex items-center gap-2 text-slate-700 font-semibold mb-1">
-          <FileCheck2 className="w-4 h-4 text-emerald-600" />
-          <span>Evidence-Linked Engine</span>
+      {/* Footer Info & Protocol Stamp */}
+      <div className="p-4 border-t border-[#D8D5CE] space-y-1 bg-[#F7F6F2]">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-[#171717]" />
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#171717]">
+            DETERMINISTIC GUARD
+          </span>
         </div>
-        <p className="text-[11px] text-slate-500 leading-tight">
-          All findings cite versioned company records. AI findings never grant publication permission.
+        <p className="text-[11px] text-[#73716B] leading-relaxed">
+          Versioned source provenance required. Human signoff is mandatory before release.
         </p>
       </div>
     </aside>
