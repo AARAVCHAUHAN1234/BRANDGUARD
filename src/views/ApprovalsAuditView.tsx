@@ -6,6 +6,9 @@ import { DriftCrawlerPanel } from '../components/DriftCrawlerPanel';
 import {
   AlertTriangle,
   Check,
+  CheckCircle2,
+  FileCheck2,
+  History,
   Lock,
   Unlock,
   ArrowRight,
@@ -13,11 +16,8 @@ import {
   Globe,
   Radio,
   Send,
-  ChevronDown,
-  ChevronUp,
   Search,
   Copy,
-  Check,
 } from 'lucide-react';
 
 export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
@@ -54,7 +54,7 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
   };
 
   const handlePublishAuditLog = (action: string, reason: string) => {
-    showToast(`📋 Audit: ${action} — ${reason.slice(0, 80)}...`);
+    showToast(`Audit: ${action} — ${reason.slice(0, 80)}...`);
   };
 
   const filteredLogs = useMemo(() => {
@@ -73,53 +73,37 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
   }, [auditLogs, auditActionFilter, auditSearch]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-[1750px] mx-auto">
       {/* Top Banner explaining Version-Bound Approvals */}
-      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-8 flex flex-col md:flex-row md:items-baseline md:justify-between gap-6">
-        <div className="space-y-1.5 max-w-2xl">
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div className="space-y-1.5 max-w-3xl">
           <div className="flex items-center gap-3">
             <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
-              FORENSICS // 05
+              LEDGER // VERIFICATION 05
             </span>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#2D5A38] border border-[#2D5A38]/30 px-1.5 py-0.2 bg-[#EEF4EF]">
-              TAMPER EVIDENT PROTOCOL
-            </span>
-          </div>
-
-          <h1 className="font-serif text-3xl text-[#171717]">
-            Version-Bound Approvals & Cryptographic Ledger
-          </h1>
-          <p className="text-xs text-[#73716B] leading-relaxed">
-            In BrandGuard, publication authorization binds mathematically to the exact cryptographic content digest. If copy is modified post-signoff, the seal voids automatically, revoking permission and reopening the governance review cycle.
-    <div className="space-y-6 max-w-[1750px] mx-auto">
-      {/* Top Banner explaining Version-Bound Approvals */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="font-heading font-extrabold text-2xl text-navy-900">
-              Version-Bound Approvals & Forensic Audit Trail
-            </h1>
-            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-emerald-300">
+            <span className="border border-[#2D5A38] bg-[#EEF4EF] text-[#2D5A38] text-[10px] font-mono uppercase px-2 py-0.5 tracking-wider">
               Tamper Evident
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
+          <h1 className="font-serif text-3xl text-[#171717]">
+            Version-Bound Approvals &amp; Forensic Audit Trail
+          </h1>
+          <p className="text-xs text-[#73716B] leading-relaxed">
             In BrandGuard, publication approval is bound cryptographically to the exact content hash. If anyone alters text
             post-approval, the seal is broken instantly, revoking approval and reopening the review cycle.
           </p>
         </div>
 
         {/* Quick select submission */}
-        <div className="flex items-center gap-2.5 shrink-0 font-mono text-xs">
-          <label className="text-[10px] uppercase tracking-wider text-[#73716B]">INSPECT DRAFT:</label>
+        <div className="flex items-center gap-2.5 shrink-0 text-xs">
+          <label className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">Inspect Draft:</label>
           <select
             value={selectedSubId}
             onChange={(e) => {
               setSelectedSubId(e.target.value);
               setActiveSubmissionId(e.target.value);
             }}
-            className="text-xs px-3 py-2 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
-            className="text-xs px-3.5 py-2 border border-slate-300 rounded-xl bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-[#14284B]"
+            className="text-xs font-mono px-3 py-2 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
           >
             {submissions.map((s) => (
               <option key={s.id} value={s.id}>
@@ -133,115 +117,49 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
       {/* Live Interactive Invalidation Test Bench */}
       {targetSub && (
         <div className="border border-[#171717] bg-[#FFFFFF]">
-          <div className="p-4 border-b border-[#D8D5CE] bg-[#F7F6F2] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="font-serif text-base text-[#171717]">
-                Verification Bench: {targetSub.title}
-              </span>
-              <span
-                className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border flex items-center gap-1 ${
-                  isApprovedAndSealed
-                    ? 'border-[#2D5A38] text-[#2D5A38] bg-[#EEF4EF]'
-                    : targetSub.status === 'Reopened'
-                    ? 'border-[#9B382B] text-[#9B382B] bg-[#F6ECEB]'
-                    : 'border-[#8C6228] text-[#8C6228] bg-[#F7F2E8]'
-        <div className="bg-white rounded-3xl border-2 border-navy-900/15 shadow-sm overflow-hidden">
-          <div className="p-5 bg-slate-50/90 border-b border-slate-200/90 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="font-heading font-bold text-base text-navy-900">
+          <div className="p-5 bg-[#F7F6F2] border-b border-[#D8D5CE] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="font-serif text-lg text-[#171717]">
                 Live Verification Bench: {targetSub.title}
               </span>
               <span
-                className={`text-[11px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1.5 ${
+                className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border flex items-center gap-1.5 ${
                   isApprovedAndSealed
-                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs'
+                    ? 'bg-[#EEF4EF] text-[#2D5A38] border-[#2D5A38]'
                     : targetSub.status === 'Reopened'
-                    ? 'bg-rose-100 text-rose-800 border border-rose-300 animate-pulse'
-                    : 'bg-blue-100 text-blue-800 border border-blue-200'
+                    ? 'bg-[#F6ECEB] text-[#9B382B] border-[#9B382B]'
+                    : 'bg-[#FFFFFF] text-[#171717] border-[#D8D5CE]'
                 }`}
               >
-                {isApprovedAndSealed ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                {isApprovedAndSealed ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
                 {isApprovedAndSealed ? 'Approved & Sealed' : targetSub.status}
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-              <span className="text-[#73716B]">
+            <div className="flex items-center gap-4 text-xs flex-wrap font-mono">
+              <span className="text-[#73716B] text-[11px] flex items-center gap-1.5">
                 LIVE HASH: <strong className="text-[#171717]">{currentHash.slice(0, 14)}...</strong>
-              </span>
-              {targetSub.approvedContentHash && (
-                <span className="text-[#73716B]">
-                  • SEAL HASH: <strong className="text-[#2D5A38]">{targetSub.approvedContentHash.slice(0, 14)}...</strong>
-            <div className="flex items-center gap-3 text-xs flex-wrap">
-              <span className="text-slate-500 font-mono text-[11px] flex items-center gap-1">
-                Live Hash: <strong className="text-slate-800 font-bold">{currentHash.slice(0, 14)}...</strong>
                 <button
                   onClick={() => handleCopy(currentHash)}
-                  className="p-1 hover:bg-slate-200 rounded text-slate-500"
+                  className="p-1 hover:bg-[#EAE6DB] text-[#73716B] hover:text-[#171717] transition-colors"
                   title="Copy full hash"
                 >
-                  {copiedHash === currentHash ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                  {copiedHash === currentHash ? <Check className="w-3 h-3 text-[#2D5A38]" /> : <Copy className="w-3 h-3" />}
                 </button>
               </span>
               {targetSub.approvedContentHash && (
-                <span className="text-slate-500 font-mono text-[11px]">
-                  Seal Hash: <strong className="text-emerald-800 font-bold">{targetSub.approvedContentHash.slice(0, 14)}...</strong>
+                <span className="text-[#73716B] text-[11px]">
+                  SEAL HASH: <strong className="text-[#2D5A38]">{targetSub.approvedContentHash.slice(0, 14)}...</strong>
                 </span>
               )}
             </div>
           </div>
 
-          <div className="p-6 sm:p-8 space-y-6">
-            {targetSub.status === 'Reopened' && (
-              <div className="border border-[#9B382B] bg-[#F6ECEB] p-4 text-xs flex items-start gap-3">
-                <AlertTriangle className="w-4 h-4 text-[#9B382B] shrink-0 mt-0.5" />
-                <div className="space-y-0.5">
-                  <span className="font-serif text-sm font-bold text-[#9B382B]">
-                    Seal Invalidation Triggered
-                  </span>
-                  <p className="text-[#9B382B] leading-relaxed">
-                    {targetSub.reopenReason ||
-                      'Material content change occurred post-approval. The approval seal has been invalidated and recorded in the audit ledger.'}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
-                <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717]">
-                  Interactive Manuscript (Edit below to observe automatic cryptographic seal reset):
-                </label>
-                <span className="text-[11px] font-mono text-[#73716B]">
-                  Type or delete any character
-                </span>
-              </div>
-              <textarea
-                rows={5}
-                value={targetSub.content}
-                onChange={(e) => updateDraftContent(targetSub.id, e.target.value)}
-                className="w-full text-xs font-sans p-4 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none leading-relaxed"
-                placeholder="Edit text to watch approval reset..."
-              />
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2 border-t border-[#D8D5CE]">
-              <div className="text-xs font-mono text-[#73716B]">
-                {targetSub.approvedBy && (
-                  <span>
-                    SIGN-OFF: <strong className="text-[#171717]">{targetSub.approvedBy}</strong> ({targetSub.approvalRole}) ON{' '}
-                    {targetSub.approvedAt}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex items-center gap-3">
-                {targetSub.status !== 'Approved' && (
-          <div className="p-5 space-y-4">
-            <div className="text-xs text-slate-600 flex items-center justify-between">
+          <div className="p-6 space-y-4">
+            <div className="text-xs text-[#5C5B57] flex items-center justify-between gap-4">
               <span>
-                <strong>Interactive Test:</strong> Type or delete any character in the box below to see how the
-                cryptographic hash engine immediately detects post-approval alterations.
+                <strong className="text-[#171717] font-mono uppercase text-[10px] tracking-wider mr-1.5">Interactive Test:</strong>
+                Type or delete any character below to observe how the cryptographic hash engine immediately detects post-approval alterations.
               </span>
               {targetSub.status === 'Reopened' && (
                 <button
@@ -252,7 +170,7 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
                       showToast('Draft content reverted to matching hash.');
                     }
                   }}
-                  className="text-xs text-blue-600 font-bold hover:underline shrink-0 ml-2"
+                  className="text-xs font-mono text-[#9B382B] underline underline-offset-4 shrink-0"
                 >
                   Restore Approved Text
                 </button>
@@ -263,49 +181,45 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
               rows={4}
               value={targetSub.content}
               onChange={(e) => updateDraftContent(targetSub.id, e.target.value)}
-              className={`w-full text-xs font-mono p-4 border rounded-2xl focus:outline-none transition-colors ${
+              className={`w-full text-xs font-mono p-4 border focus:outline-none transition-colors ${
                 isApprovedAndSealed
-                  ? 'border-emerald-300 bg-emerald-50/20 focus:ring-2 focus:ring-emerald-500'
+                  ? 'border-[#2D5A38] bg-[#EEF4EF]/40 focus:border-[#2D5A38]'
                   : targetSub.status === 'Reopened'
-                  ? 'border-rose-400 bg-rose-50/20 focus:ring-2 focus:ring-rose-500'
-                  : 'border-slate-300 focus:ring-2 focus:ring-[#14284B]'
+                  ? 'border-[#9B382B] bg-[#F6ECEB]/40 focus:border-[#9B382B]'
+                  : 'border-[#D8D5CE] bg-[#F7F6F2] focus:border-[#171717]'
               }`}
             />
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               <div className="flex items-center gap-2">
                 {isApprovedAndSealed ? (
-                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#2D5A38] bg-[#EEF4EF] px-3 py-1.5 border border-[#2D5A38]/40">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#2D5A38]" />
                     <span>Cryptographic Integrity Verified: Hash matches signed release seal.</span>
                   </div>
                 ) : targetSub.status === 'Reopened' ? (
-                  <div className="flex items-center gap-2 text-xs font-bold text-rose-800 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-300">
-                    <AlertTriangle className="w-4 h-4 text-rose-600" />
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#9B382B] bg-[#F6ECEB] px-3 py-1.5 border border-[#9B382B]">
+                    <AlertTriangle className="w-3.5 h-3.5 text-[#9B382B]" />
                     <span>TAMPER DETECTED: Hash mismatch. Seal automatically invalidated.</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#73716B]">
                     <span>Draft is in review. Not yet sealed for publication.</span>
                   </div>
                 )}
               </div>
 
               {/* Action buttons */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 {targetSub.status !== 'Approved' && currentRole !== 'creator' && (
                   <button
                     onClick={() => {
                       approveSubmission(targetSub.id, 'Verified via Live Verification Bench testing.');
                     }}
-                    className="flex items-center gap-2 bg-[#2D5A38] hover:bg-[#23472c] text-[#F7F6F2] text-xs font-medium px-4 py-2 border border-[#2D5A38] transition-colors"
+                    className="flex items-center gap-1.5 bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] font-medium text-xs px-4 py-2 border border-[#171717] transition-colors"
                   >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Re-Certify & Seal Approval</span>
-                    className="flex items-center gap-1.5 bg-[#FFD60A] hover:bg-[#ffe043] text-[#14284B] font-extrabold text-xs px-4 py-2 rounded-xl shadow-sm transition-all"
-                  >
-                    <FileCheck2 className="w-3.5 h-3.5" />
-                    <span>Sign Off & Seal Hash Now</span>
+                    <FileCheck2 className="w-3.5 h-3.5 text-[#2D5A38]" />
+                    <span>Sign Off &amp; Seal Hash Now</span>
                   </button>
                 )}
 
@@ -314,10 +228,7 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
                     setActiveSubmissionId(targetSub.id);
                     onNavigate('workspace');
                   }}
-                  className="flex items-center gap-1.5 border border-[#171717] hover:bg-[#171717] hover:text-[#F7F6F2] text-[#171717] text-xs font-medium px-4 py-2 transition-colors"
-                >
-                  <span>Open Workspace</span>
-                  className="flex items-center gap-1 text-xs font-bold text-navy-900 hover:text-blue-700 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-xl transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-medium text-[#171717] border border-[#D8D5CE] hover:border-[#171717] bg-[#FFFFFF] px-3.5 py-2 transition-colors"
                 >
                   <span>Open Full Workspace</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -328,43 +239,26 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
         </div>
       )}
 
-      {/* Forensic Audit Log Table */}
-      <div className="border border-[#D8D5CE] bg-[#FFFFFF]">
-        <div className="p-6 border-b border-[#D8D5CE] bg-[#F7F6F2] flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-          <div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
-              IMMUTABLE CHRONICLE // FORENSIC LOG
-            </span>
-            <h2 className="font-serif text-2xl text-[#171717] mt-1">
-              Governance Audit Ledger
-            </h2>
-            <p className="text-xs text-[#73716B] mt-0.5">
-              Cryptographically timestamped chronological record of all submissions, human judgments, version alterations, and approval seals.
-            </p>
-          </div>
-          <span className="text-xs font-mono text-[#73716B]">
-            {auditLogs.length} Events Inscribed
-          </span>
       {/* Expandable Advanced Integrations Drawer: Bots, Webhooks, Drift Crawler */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-slate-200/90 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <Radio className="w-5 h-5 text-navy-900" />
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF]">
+        <div className="p-6 border-b border-[#D8D5CE] flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Radio className="w-4 h-4 text-[#171717]" />
             <div>
-              <h2 className="font-heading font-extrabold text-base text-navy-900">
-                Tier 2 & 3 Enterprise Integrations
+              <h2 className="font-serif text-xl text-[#171717]">
+                Tier 2 &amp; 3 Enterprise Integrations
               </h2>
-              <p className="text-xs text-slate-500">
-                Slack/Teams Approval Bots, Autonomous Webhooks & Post-Publication Drift Crawler
+              <p className="text-xs text-[#73716B]">
+                Slack/Teams Approval Bots, Autonomous Webhooks &amp; Post-Publication Drift Crawler
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+          <div className="flex items-center bg-[#F7F6F2] border border-[#D8D5CE] divide-x divide-[#D8D5CE] text-xs font-mono">
             <button
               onClick={() => setActiveIntegrationTab(activeIntegrationTab === 'bots' ? 'none' : 'bots')}
-              className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all ${
-                activeIntegrationTab === 'bots' ? 'bg-[#14284B] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              className={`px-3.5 py-2 flex items-center gap-1.5 transition-colors ${
+                activeIntegrationTab === 'bots' ? 'bg-[#171717] text-[#F7F6F2]' : 'text-[#5C5B57] hover:text-[#171717]'
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
@@ -372,8 +266,8 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
             </button>
             <button
               onClick={() => setActiveIntegrationTab(activeIntegrationTab === 'webhooks' ? 'none' : 'webhooks')}
-              className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all ${
-                activeIntegrationTab === 'webhooks' ? 'bg-[#14284B] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              className={`px-3.5 py-2 flex items-center gap-1.5 transition-colors ${
+                activeIntegrationTab === 'webhooks' ? 'bg-[#171717] text-[#F7F6F2]' : 'text-[#5C5B57] hover:text-[#171717]'
               }`}
             >
               <Send className="w-3.5 h-3.5" />
@@ -381,8 +275,8 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
             </button>
             <button
               onClick={() => setActiveIntegrationTab(activeIntegrationTab === 'crawler' ? 'none' : 'crawler')}
-              className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all ${
-                activeIntegrationTab === 'crawler' ? 'bg-[#14284B] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              className={`px-3.5 py-2 flex items-center gap-1.5 transition-colors ${
+                activeIntegrationTab === 'crawler' ? 'bg-[#171717] text-[#F7F6F2]' : 'text-[#5C5B57] hover:text-[#171717]'
               }`}
             >
               <Globe className="w-3.5 h-3.5" />
@@ -393,7 +287,7 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
 
         {/* Drawer Contents */}
         {activeIntegrationTab === 'bots' && targetSub && (
-          <div className="p-6 bg-slate-50/50 border-t border-slate-100">
+          <div className="p-6 bg-[#F7F6F2] border-t border-[#D8D5CE]">
             <SlackTeamsBotPanel
               submission={targetSub}
               currentRole={currentRole}
@@ -408,7 +302,7 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
           </div>
         )}
         {activeIntegrationTab === 'webhooks' && targetSub && (
-          <div className="p-6 bg-slate-50/50 border-t border-slate-100">
+          <div className="p-6 bg-[#F7F6F2] border-t border-[#D8D5CE]">
             <PublishingPanel
               submission={targetSub}
               onAuditLog={handlePublishAuditLog}
@@ -417,7 +311,7 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
           </div>
         )}
         {activeIntegrationTab === 'crawler' && (
-          <div className="p-6 bg-slate-50/50 border-t border-slate-100">
+          <div className="p-6 bg-[#F7F6F2] border-t border-[#D8D5CE]">
             <DriftCrawlerPanel
               onNavigateToWorkspace={(subId: string) => {
                 setActiveSubmissionId(subId);
@@ -429,14 +323,14 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
       </div>
 
       {/* Forensic Audit Table — Filterable & Searchable */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-slate-200/90 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF]">
+        <div className="p-6 border-b border-[#D8D5CE] flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <History className="w-5 h-5 text-navy-900" />
-              <h2 className="font-heading font-extrabold text-lg text-navy-900">Forensic Audit Ledger</h2>
+              <History className="w-4 h-4 text-[#171717]" />
+              <h2 className="font-serif text-2xl text-[#171717]">Forensic Audit Ledger</h2>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-[#73716B] mt-0.5">
               Append-only audit trail logging every human decision, approval seal, rule version, and hash invalidation.
             </p>
           </div>
@@ -444,13 +338,13 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
           <div className="flex flex-wrap items-center gap-3">
             {/* Search */}
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-3.5 h-3.5 text-[#73716B] absolute left-3 top-2.5" />
               <input
                 type="text"
                 placeholder="Search audit trail..."
                 value={auditSearch}
                 onChange={(e) => setAuditSearch(e.target.value)}
-                className="text-xs pl-9 pr-3.5 py-2 border border-slate-200 rounded-xl w-56 focus:outline-none focus:ring-2 focus:ring-[#14284B] bg-slate-50/50"
+                className="text-xs font-mono pl-9 pr-3.5 py-2 border border-[#D8D5CE] w-56 focus:outline-none focus:border-[#171717] bg-[#F7F6F2]"
               />
             </div>
 
@@ -458,7 +352,7 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
             <select
               value={auditActionFilter}
               onChange={(e) => setAuditActionFilter(e.target.value)}
-              className="text-xs px-3 py-2 border border-slate-200 rounded-xl bg-white font-semibold focus:outline-none"
+              className="text-xs font-mono px-3 py-2 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
             >
               <option value="all">All Event Types ({auditLogs.length})</option>
               <option value="APPROVAL_SEALED">Approval Sealed</option>
@@ -472,105 +366,56 @@ export const ApprovalsAuditView: React.FC<{ onNavigate: (view: string) => void }
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FFFFFF] text-[#73716B] font-mono uppercase text-[10px] tracking-wider border-b border-[#D8D5CE]">
+            <thead className="bg-[#F7F6F2] text-[#73716B] border-b border-[#D8D5CE] uppercase font-mono text-[10px] tracking-wider">
               <tr>
                 <th className="py-3 px-5">Timestamp</th>
-                <th className="py-3 px-5">Actor / Persona</th>
-                <th className="py-3 px-5">Event Action</th>
-                <th className="py-3 px-5">Submission</th>
-                <th className="py-3 px-5">Recorded Governance Rationale</th>
-                <th className="py-3 px-5">Content Hash</th>
+                <th className="py-3 px-4">Event Type</th>
+                <th className="py-3 px-4">Actor &amp; Role</th>
+                <th className="py-3 px-4">Subject Reference</th>
+                <th className="py-3 px-4">Recorded Governance Rationale</th>
+                <th className="py-3 px-5 text-right">Cryptographic Hash</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#EAE6DB]">
-              {auditLogs.map((log) => {
-                const isTamper = log.action.includes('REOPENED') || log.action.includes('MISMATCH');
-                const isApproval = log.action.includes('APPROVED');
-
-                return (
-                  <tr key={log.id} className="hover:bg-[#F7F6F2]/70 transition-colors">
-                    <td className="py-4 px-5 text-[#73716B] font-mono text-[11px] whitespace-nowrap">
-                      {log.timestamp}
-                    </td>
-                    <td className="py-4 px-5 whitespace-nowrap">
-                      <div className="font-medium text-[#171717]">{log.actor}</div>
-                      <span className="text-[10px] font-mono text-[#73716B] uppercase">
-                        {log.role}
-                      </span>
-                    </td>
-                    <td className="py-4 px-5 whitespace-nowrap">
-                      <span
-                        className={`font-mono text-[10px] uppercase px-2 py-0.5 border ${
-                          isApproval
-                            ? 'border-[#2D5A38] text-[#2D5A38] bg-[#EEF4EF]'
-                            : isTamper
-                            ? 'border-[#9B382B] text-[#9B382B] bg-[#F6ECEB]'
-                            : 'border-[#73716B] text-[#171717] bg-[#F7F6F2]'
-                        }`}
-                      >
-                        {log.action}
-                      </span>
-                    </td>
-                    <td className="py-4 px-5 max-w-xs truncate text-[#171717] font-serif text-sm">
-                      {log.submissionTitle}
-                    </td>
-                    <td className="py-4 px-5 text-[#5C5B57] max-w-sm">{log.reason}</td>
-                    <td className="py-4 px-5 font-mono text-[10px] text-[#73716B] whitespace-nowrap">
-                      {log.contentVersionHash.slice(0, 16)}...
-                    </td>
-                  </tr>
-                );
-              })}
-            <thead className="bg-slate-50/80 text-slate-600 border-b border-slate-200/80 uppercase font-bold text-[11px] tracking-wider">
-              <tr>
-                <th className="py-3.5 px-5">Timestamp</th>
-                <th className="py-3.5 px-4">Event Type</th>
-                <th className="py-3.5 px-4">Actor & Role</th>
-                <th className="py-3.5 px-4">Subject Reference</th>
-                <th className="py-3.5 px-4">Recorded Governance Rationale</th>
-                <th className="py-3.5 px-5 text-right">Cryptographic Hash</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
               {filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-50/70 transition-colors">
-                  <td className="py-3.5 px-5 font-mono text-[11px] text-slate-500 whitespace-nowrap">
+                <tr key={log.id} className="hover:bg-[#F7F6F2]/70 transition-colors">
+                  <td className="py-3.5 px-5 font-mono text-[11px] text-[#73716B] whitespace-nowrap">
                     {log.timestamp}
                   </td>
                   <td className="py-3.5 px-4 whitespace-nowrap">
                     <span
-                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                      className={`inline-block px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border ${
                         log.action === 'APPROVAL_SEALED'
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          ? 'bg-[#EEF4EF] text-[#2D5A38] border-[#2D5A38]'
                           : log.action === 'REOPENED_VERSION_HASH_MISMATCH'
-                          ? 'bg-rose-100 text-rose-800 border border-rose-300 animate-pulse font-extrabold'
+                          ? 'bg-[#F6ECEB] text-[#9B382B] border-[#9B382B]'
                           : log.action === 'HUMAN_DECISION_RECORDED'
-                          ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                          : 'bg-slate-100 text-slate-700'
+                          ? 'bg-[#F7F2E8] text-[#8C6228] border-[#8C6228]'
+                          : 'bg-[#F7F6F2] text-[#171717] border-[#D8D5CE]'
                       }`}
                     >
                       {log.action}
                     </span>
                   </td>
                   <td className="py-3.5 px-4 whitespace-nowrap">
-                    <div className="font-bold text-navy-900">{log.actor}</div>
-                    <div className="text-[10px] text-slate-400 capitalize">{log.role.replace('_', ' ')}</div>
+                    <div className="font-medium text-[#171717]">{log.actor}</div>
+                    <div className="text-[10px] font-mono text-[#73716B] capitalize">{log.role.replace('_', ' ')}</div>
                   </td>
-                  <td className="py-3.5 px-4 whitespace-nowrap font-mono text-[11px] text-slate-600 font-semibold">
+                  <td className="py-3.5 px-4 whitespace-nowrap font-mono text-[11px] text-[#5C5B57]">
                     {log.submissionId || 'System'}
                   </td>
                   <td className="py-3.5 px-4 max-w-md">
-                    <p className="text-slate-700 leading-snug line-clamp-2">
+                    <p className="text-[#5C5B57] leading-snug line-clamp-2">
                       {log.reason}
                     </p>
                   </td>
                   <td className="py-3.5 px-5 text-right whitespace-nowrap">
                     {log.contentVersionHash ? (
-                      <span className="font-mono text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">
+                      <span className="font-mono text-[10px] bg-[#F7F6F2] text-[#171717] px-2 py-1 border border-[#D8D5CE]">
                         {log.contentVersionHash.slice(0, 14)}...
                       </span>
                     ) : (
-                      <span className="text-slate-400 text-[10px]">—</span>
+                      <span className="text-[#73716B] text-[10px]">—</span>
                     )}
                   </td>
                 </tr>

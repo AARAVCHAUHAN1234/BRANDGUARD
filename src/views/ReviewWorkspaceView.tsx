@@ -10,7 +10,6 @@ import {
   Edit3,
   ChevronLeft,
   ChevronRight,
-  Check,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -640,39 +639,42 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* Approval Modal */}
       {showApproveModal && (
-        <div className="fixed inset-0 bg-[#08101e]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-heading font-extrabold text-lg text-navy-900 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                Sign Off & Cryptographically Seal Draft
-              </h3>
+        <div className="fixed inset-0 bg-[#171717]/60 backdrop-blur-[2px] z-50 flex items-center justify-center p-4">
+          <div className="bg-[#FFFFFF] max-w-lg w-full p-8 border border-[#171717] shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-[#D8D5CE] pb-3">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">GOVERNANCE SEAL</span>
+                <h3 className="font-serif text-xl text-[#171717] mt-0.5 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#2D5A38]" />
+                  Sign Off & Cryptographically Seal Draft
+                </h3>
+              </div>
               <button
                 onClick={() => setShowApproveModal(false)}
-                className="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center text-xl font-bold transition-colors"
+                className="w-8 h-8 hover:bg-[#F7F6F2] text-[#73716B] hover:text-[#171717] flex items-center justify-center text-xl transition-colors"
               >
                 &times;
               </button>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-[#5C5B57] leading-relaxed">
               Applying this sign-off binds the exact content hash (sha256) into the immutable audit trail. Any future edits
               to this text will automatically revoke approval and trigger a re-review alert.
             </p>
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
-                Compliance Justification (Required for Audit Ledger)
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block mb-1">
+                Compliance Justification <span className="text-[#9B382B]">*</span>
               </label>
               <textarea
                 rows={3}
                 value={approvalJustification}
                 onChange={(e) => setApprovalJustification(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                className="w-full text-xs p-3 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
               />
             </div>
-            <div className="flex justify-end gap-2.5 pt-2 border-t border-slate-100">
+            <div className="flex justify-end gap-3 pt-3 border-t border-[#D8D5CE]">
               <button
                 onClick={() => setShowApproveModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-xl transition-colors"
+                className="px-3 py-1.5 text-xs text-[#73716B] hover:text-[#171717] transition-colors"
               >
                 Cancel
               </button>
@@ -685,7 +687,7 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
                     showToast('Justification is required for approval.');
                   }
                 }}
-                className="px-5 py-2.5 text-xs font-extrabold bg-gradient-to-r from-[#FFD60A] to-[#FBBF24] hover:from-[#ffe043] hover:to-[#fcd34d] text-[#14284B] rounded-xl shadow-md transition-all active:scale-[0.98]"
+                className="bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] font-medium px-4 py-2 text-xs border border-[#171717] transition-colors"
               >
                 Sign Off & Bind Hash Seal
               </button>
