@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useBrand } from '../context/BrandContext';
 import { BrandRule } from '../types';
 import {
@@ -36,9 +36,50 @@ export const KnowledgeBaseView: React.FC = () => {
     setEditingRule(null);
     setRuleEditReason('');
     setRuleEditDesc('');
+    showToast(`Bumped ${editingRule.id} to new version.`);
   };
 
   const isBrandManager = currentRole === 'brand_manager' || currentRole === 'legal';
+
+  const filteredRules = useMemo(() => {
+    return rules.filter((r) => {
+      if (categoryFilter !== 'all' && r.category.toLowerCase() !== categoryFilter.toLowerCase()) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesName = r.name.toLowerCase().includes(q);
+        const matchesDesc = r.description.toLowerCase().includes(q);
+        const matchesId = r.id.toLowerCase().includes(q);
+        if (!matchesName && !matchesDesc && !matchesId) return false;
+      }
+      return true;
+    });
+  }, [rules, categoryFilter, searchQuery]);
+
+  const filteredFacts = useMemo(() => {
+    return facts.filter((f) => {
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesFact = f.fact.toLowerCase().includes(q);
+        const matchesSource = f.sourceTitle.toLowerCase().includes(q);
+        const matchesId = f.id.toLowerCase().includes(q);
+        if (!matchesFact && !matchesSource && !matchesId) return false;
+      }
+      return true;
+    });
+  }, [facts, searchQuery]);
+
+  const filteredTerminology = useMemo(() => {
+    return terminology.filter((t) => {
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesForbidden = t.forbidden.toLowerCase().includes(q);
+        const matchesPreferred = t.preferred.toLowerCase().includes(q);
+        const matchesCategory = t.category.toLowerCase().includes(q);
+        if (!matchesForbidden && !matchesPreferred && !matchesCategory) return false;
+      }
+      return true;
+    });
+  }, [terminology, searchQuery]);
 
   return (
     <div className="space-y-8">
@@ -306,7 +347,7 @@ export const KnowledgeBaseView: React.FC = () => {
         </div>
       )}
 
-      {/* Sources & Audits Tab */}
+      {/* Sources Tab */}
       {activeTab === 'sources' && (
         <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-8 space-y-6">
           <div>

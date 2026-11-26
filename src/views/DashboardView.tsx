@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useBrand } from '../context/BrandContext';
 import {
   ArrowRight,
@@ -10,11 +10,35 @@ import {
 export const DashboardView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { submissions, setActiveSubmissionId, startGuidedTour, rules, facts } = useBrand();
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'in_review' | 'approved' | 'needs_evidence'>('all');
+
   const totalSubmissions = submissions.length;
   const inReviewCount = submissions.filter((s) => s.status === 'In review' || s.status === 'Reopened').length;
   const approvedCount = submissions.filter((s) => s.status === 'Approved').length;
   const needsEvidenceCount = submissions.filter((s) => s.status === 'Needs evidence').length;
   const expiredFactsCount = facts.filter((f) => f.status === 'Expired').length;
+
+  const filteredSubmissions = useMemo(() => {
+    return submissions.filter((sub) => {
+      // Status filter
+      if (statusFilter === 'in_review' && sub.status !== 'In review' && sub.status !== 'Reopened') return false;
+      if (statusFilter === 'approved' && sub.status !== 'Approved') return false;
+      if (statusFilter === 'needs_evidence' && sub.status !== 'Needs evidence') return false;
+
+      // Search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesTitle = sub.title.toLowerCase().includes(q);
+        const matchesChannel = sub.channel.toLowerCase().includes(q);
+        const matchesSubmitter = sub.submittedBy.toLowerCase().includes(q);
+        const matchesId = sub.id.toLowerCase().includes(q);
+        if (!matchesTitle && !matchesChannel && !matchesSubmitter && !matchesId) return false;
+      }
+
+      return true;
+    });
+  }, [submissions, statusFilter, searchQuery]);
 
   return (
     <div className="space-y-10">
@@ -201,6 +225,7 @@ export const DashboardView: React.FC<{ onNavigate: (view: string) => void }> = (
           </button>
         </div>
 
+        {/* Table Content */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#F7F6F2] text-[#73716B] border-b border-[#D8D5CE] font-mono text-[10px] uppercase tracking-wider">

@@ -8,6 +8,10 @@ import {
   AlertTriangle,
   Lock,
   Edit3,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
@@ -27,6 +31,10 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
   const [customCorrection, setCustomCorrection] = useState<string>('');
   const [showEditInput, setShowEditInput] = useState<boolean>(false);
   const [isReviewing, setIsReviewing] = useState<boolean>(false);
+  const [showApproveModal, setShowApproveModal] = useState<boolean>(false);
+  const [approvalJustification, setApprovalJustification] = useState<string>(
+    'Verified against Q4 Brand Guidelines and GDPR compliance documents.'
+  );
 
   const findings = useMemo(() => activeSubmission?.findings || [], [activeSubmission]);
 
@@ -86,6 +94,14 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
     await runReviewOnSubmission(activeSubmission.id);
     setIsReviewing(false);
   };
+
+  // Quick preset reasons for effortless governance decisions
+  const QUICK_REASONS = [
+    'Approved rebrand per Q1 Brand Kit.',
+    'Disputed: Direct executive quote in context.',
+    'Escalated to legal: Requires regulatory counsel review.',
+    'Accepted minimal correction per brand standards.',
+  ];
 
   // Render highlighted content spans
   const renderHighlightedContent = () => {
@@ -156,6 +172,18 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
   };
 
   const acceptedCount = findings.filter((f) => f.humanDecision?.status === 'accepted').length;
+  const wordCount = activeSubmission.content.split(/\s+/).filter(Boolean).length;
+  const charCount = activeSubmission.content.length;
+
+  const currentFindingIndex = findings.findIndex((f) => f.id === selectedFinding?.id);
+
+  const navigateFinding = (direction: 'prev' | 'next') => {
+    if (findings.length === 0) return;
+    let nextIndex = direction === 'next' ? currentFindingIndex + 1 : currentFindingIndex - 1;
+    if (nextIndex >= findings.length) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = findings.length - 1;
+    setSelectedFindingId(findings[nextIndex].id);
+  };
 
   return (
     <div className="space-y-6">
@@ -609,6 +637,62 @@ export const ReviewWorkspaceView: React.FC<{ onNavigate: (view: string) => void 
           )}
         </div>
       </div>
+
+      {/* Approval Modal */}
+      {showApproveModal && (
+        <div className="fixed inset-0 bg-[#08101e]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-heading font-extrabold text-lg text-navy-900 flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                Sign Off & Cryptographically Seal Draft
+              </h3>
+              <button
+                onClick={() => setShowApproveModal(false)}
+                className="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center text-xl font-bold transition-colors"
+              >
+                &times;
+              </button>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Applying this sign-off binds the exact content hash (sha256) into the immutable audit trail. Any future edits
+              to this text will automatically revoke approval and trigger a re-review alert.
+            </p>
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                Compliance Justification (Required for Audit Ledger)
+              </label>
+              <textarea
+                rows={3}
+                value={approvalJustification}
+                onChange={(e) => setApprovalJustification(e.target.value)}
+                className="w-full text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
+              />
+            </div>
+            <div className="flex justify-end gap-2.5 pt-2 border-t border-slate-100">
+              <button
+                onClick={() => setShowApproveModal(false)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (approvalJustification.trim()) {
+                    approveSubmission(activeSubmission.id, approvalJustification.trim());
+                    setShowApproveModal(false);
+                  } else {
+                    showToast('Justification is required for approval.');
+                  }
+                }}
+                className="px-5 py-2.5 text-xs font-extrabold bg-gradient-to-r from-[#FFD60A] to-[#FBBF24] hover:from-[#ffe043] hover:to-[#fcd34d] text-[#14284B] rounded-xl shadow-md transition-all active:scale-[0.98]"
+              >
+                Sign Off & Bind Hash Seal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

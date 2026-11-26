@@ -104,6 +104,25 @@ export const GovernanceInsightsView: React.FC = () => {
         </div>
       </div>
 
+      {/* KPI Velocity Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4.5">
+        <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Average Review Turnaround</p>
+          <p className="text-2xl font-black text-navy-900 mt-1">3.4 Hours</p>
+          <p className="text-[11px] text-emerald-600 font-bold mt-1">↓ 81% reduction from 18.4h baseline</p>
+        </div>
+        <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Automated Pre-Screen Coverage</p>
+          <p className="text-2xl font-black text-emerald-700 mt-1">100%</p>
+          <p className="text-[11px] text-slate-500 font-medium mt-1">All text evaluated before publication</p>
+        </div>
+        <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Post-Approval Hash Tampering</p>
+          <p className="text-2xl font-black text-navy-900 mt-1">0 Released</p>
+          <p className="text-[11px] text-emerald-600 font-bold mt-1">100% caught by automatic seal listener</p>
+        </div>
+      </div>
+
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Most Repeated Violations Chart */}

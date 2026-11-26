@@ -10,6 +10,7 @@ import { KnowledgeBaseView } from './views/KnowledgeBaseView';
 import { ApprovalsAuditView } from './views/ApprovalsAuditView';
 import { GovernanceInsightsView } from './views/GovernanceInsightsView';
 import { RoadmapResponsibleView } from './views/RoadmapResponsibleView';
+import { Bell, Info, Shield } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('dashboard');
@@ -38,6 +39,7 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F6F2] text-[#171717] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#DCE6F0] flex flex-col font-sans text-slate-900 selection:bg-amber-200 selection:text-navy-950">
       <Header currentView={currentView} onNavigate={setCurrentView} />
 
       <div className="flex-1 flex overflow-hidden">
@@ -74,6 +76,30 @@ const MainLayout: React.FC = () => {
         <div className="fixed bottom-6 left-6 z-50 bg-[#171717] text-[#F7F6F2] px-4 py-3 border border-[#171717] shadow-lg flex items-center gap-3 text-xs tracking-tight animate-in fade-in slide-in-from-bottom-2 duration-200">
           <div className="w-1.5 h-1.5 bg-[#9B382B] shrink-0" />
           <span className="font-sans font-medium">{toastMessage}</span>
+        <main className="flex-1 p-6 lg:p-8 overflow-y-auto max-h-[calc(100vh-81px)]">
+          {renderCurrentView()}
+
+          <footer className="mt-14 pt-8 pb-6 border-t border-slate-300/80 text-center text-xs text-slate-500 space-y-1.5">
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-5 h-5 rounded-lg bg-[#14284B] text-[#FFD60A] flex items-center justify-center font-bold">
+                <Shield className="w-3 h-3" />
+              </div>
+              <p className="font-extrabold text-navy-900">
+                BrandGuard AI — "Every content decision. Backed by evidence."
+              </p>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Deterministic Rules Engine • Immutable Version-Bound Approvals • Multimodal Intake • Autonomous Webhooks • Drift Crawler
+            </p>
+          </footer>
+        </main>
+      </div>
+
+      {/* Toast Notification — Premium Glass Pill */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-6 z-50 bg-[#14284B] text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-[#FFD60A] flex items-center gap-3 text-xs font-semibold animate-in slide-in-from-bottom-3 duration-200">
+          <Info className="w-4 h-4 text-[#FFD60A] shrink-0" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
