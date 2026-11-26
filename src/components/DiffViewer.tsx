@@ -7,19 +7,19 @@ interface DiffViewerProps {
 
 export const DiffViewer: React.FC<DiffViewerProps> = ({ original, suggested }) => {
   return (
-    <div className="font-mono text-xs rounded-xl overflow-hidden border border-slate-200 bg-slate-900 text-slate-100 shadow-inner">
-      <div className="bg-slate-800/80 px-3 py-1.5 border-b border-slate-700/80 text-[10px] font-sans font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-        <span>Suggested Correction Diff</span>
-        <span className="text-amber-400">Minimal change</span>
+    <div className="font-mono text-xs border border-[#D8D5CE] bg-[#FFFFFF]">
+      <div className="bg-[#F7F6F2] px-3 py-1.5 border-b border-[#D8D5CE] text-[10px] font-mono uppercase tracking-wider text-[#73716B] flex items-center justify-between">
+        <span>REDLINE // MINIMAL CORRECTION</span>
+        <span className="text-[#8C6228]">PROVENANCE BOUND</span>
       </div>
-      <div className="p-3 space-y-1.5 leading-relaxed overflow-x-auto">
-        <div className="flex items-start gap-2 bg-red-950/40 text-red-300 px-2 py-1 rounded border-l-2 border-red-500">
-          <span className="select-none font-bold text-red-500 shrink-0">-</span>
-          <span className="line-through opacity-80 break-words">{original}</span>
+      <div className="p-3 space-y-2 leading-relaxed">
+        <div className="flex items-start gap-2 bg-[#F8EBE9] text-[#9B382B] px-2.5 py-1.5 border-l-2 border-[#9B382B]">
+          <span className="select-none font-bold text-[#9B382B] shrink-0 font-mono">−</span>
+          <span className="line-through opacity-85 break-words font-sans text-xs">{original}</span>
         </div>
-        <div className="flex items-start gap-2 bg-emerald-950/40 text-emerald-300 px-2 py-1 rounded border-l-2 border-emerald-500 font-semibold">
-          <span className="select-none font-bold text-emerald-400 shrink-0">+</span>
-          <span className="break-words">{suggested}</span>
+        <div className="flex items-start gap-2 bg-[#EEF4EF] text-[#2D5A38] px-2.5 py-1.5 border-l-2 border-[#2D5A38]">
+          <span className="select-none font-bold text-[#2D5A38] shrink-0 font-mono">+</span>
+          <span className="break-words font-sans text-xs font-medium text-[#171717]">{suggested}</span>
         </div>
       </div>
     </div>

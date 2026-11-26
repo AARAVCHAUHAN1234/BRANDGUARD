@@ -1,25 +1,24 @@
 import React from 'react';
 import { useBrand } from '../context/BrandContext';
-import { Sparkles, ArrowRight, X, CheckCircle, ShieldAlert, Award, FileEdit, BarChart2 } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 
 interface GuidedDemoProps {
   onNavigate: (view: string) => void;
 }
 
 export const GuidedDemoModal: React.FC<GuidedDemoProps> = ({ onNavigate }) => {
-  const { tourStep, nextTourStep, endGuidedTour, setCurrentRole, activeSubmission } = useBrand();
+  const { tourStep, nextTourStep, endGuidedTour, setCurrentRole } = useBrand();
 
   if (tourStep === null) return null;
 
   const tourStepsData = [
     {
       step: 1,
-      title: 'Step 1: Load Messy Submission',
-      icon: ShieldAlert,
+      title: 'Load Messy Draft',
       view: 'workspace',
       description:
-        'We have loaded "Q4 Product Launch" into the Review Workspace. It contains obsolete product names ("CloudLens"), expired badges, 100% security guarantees, and conflicting metrics.',
-      actionText: 'Proceed to Run Governance Review',
+        'We loaded "Q4 Product Launch" into the Review Workspace. It contains retired product names ("CloudLens"), expired badges, unverified guarantees, and conflicting metrics.',
+      actionText: 'Inspect Heuristic Findings',
       action: () => {
         onNavigate('workspace');
         nextTourStep();
@@ -27,12 +26,11 @@ export const GuidedDemoModal: React.FC<GuidedDemoProps> = ({ onNavigate }) => {
     },
     {
       step: 2,
-      title: 'Step 2: Inspect Reasoning Chains',
-      icon: ShieldAlert,
+      title: 'Inspect 6-Step Reasoning Chains',
       view: 'workspace',
       description:
-        'Notice how every flagged phrase has an exact 6-step Reasoning Chain: Claim -> Applicable Rule -> Evidence -> Explanation -> Diff Correction -> Human Decision. Click any highlighted phrase on the left to see its evidence.',
-      actionText: 'Next: Accept a Suggested Fix',
+        'Notice how every flagged phrase has an unbroken 6-step Reasoning Chain: Claim → Applicable Rule → Grounded Evidence → Compliance Explanation → Minimal Redline Correction → Human Arbitration.',
+      actionText: 'Review Suggested Fix',
       action: () => {
         onNavigate('workspace');
         nextTourStep();
@@ -40,14 +38,12 @@ export const GuidedDemoModal: React.FC<GuidedDemoProps> = ({ onNavigate }) => {
     },
     {
       step: 3,
-      title: 'Step 3: Accept Minimal-Change Fix',
-      icon: CheckCircle,
+      title: 'Accept Minimal-Change Redline',
       view: 'workspace',
       description:
-        'Click "Accept Correction" on the CloudLens finding, then hit "Apply all accepted corrections". Notice how the draft replaces the retired name with "Nimbus Insight" while preserving the creator intent.',
-      actionText: 'Next: Switch Role & Approve Draft',
+        'Accepting a suggested correction replaces the deprecated name with approved branding ("Nimbus Insight") while keeping author intent intact. Click "Apply All Accepted Corrections".',
+      actionText: 'Switch Persona & Authorize',
       action: () => {
-        // Switch to legal to demonstrate approval permissions
         setCurrentRole('legal');
         onNavigate('workspace');
         nextTourStep();
@@ -55,12 +51,11 @@ export const GuidedDemoModal: React.FC<GuidedDemoProps> = ({ onNavigate }) => {
     },
     {
       step: 4,
-      title: 'Step 4: Grant Version-Bound Approval',
-      icon: Award,
+      title: 'Grant Version-Bound Cryptographic Sign-Off',
       view: 'approvals',
       description:
-        'We switched your role to Marcus Vance (Legal Reviewer). Click "Approve Draft" in the workspace or the Approvals tab. The system binds the approval to an exact cryptographic content hash.',
-      actionText: 'Next: Test Material Edit Invalidation',
+        'We activated Marcus Vance (Legal Counsel). Click "Sign Off & Seal Draft" to bind publication authorization directly to the cryptographic content hash.',
+      actionText: 'Observe Tamper Invalidation',
       action: () => {
         onNavigate('approvals');
         nextTourStep();
@@ -68,12 +63,11 @@ export const GuidedDemoModal: React.FC<GuidedDemoProps> = ({ onNavigate }) => {
     },
     {
       step: 5,
-      title: 'Step 5: Watch Approval Reset (Crucial Differentiator!)',
-      icon: FileEdit,
+      title: 'Live Alteration Invalidation Test',
       view: 'approvals',
       description:
-        'Try editing the approved text in the test box. Notice how the instant a character changes, the approval seal breaks and status flips to "Reopened for review" with a full audit trail record!',
-      actionText: 'Next: View Governance Insights',
+        'Try typing or editing text in the verification test bench. The instant any character shifts, the approval seal breaks immediately and status resets to "Reopened for review".',
+      actionText: 'Inspect Governance Insights',
       action: () => {
         onNavigate('insights');
         nextTourStep();
@@ -81,12 +75,11 @@ export const GuidedDemoModal: React.FC<GuidedDemoProps> = ({ onNavigate }) => {
     },
     {
       step: 6,
-      title: 'Step 6: Governance Insights & Learning Loop',
-      icon: BarChart2,
+      title: 'Governance Insights & Learning Loop',
       view: 'insights',
       description:
-        'Here the system closes the loop: turning repeated mistakes into governance insights. Discover which rules get disputed most (unclear rules), which claims lack sources, and review bottlenecks.',
-      actionText: 'Finish Tour & Explore',
+        'BrandGuard converts repeated creator friction into empirical policy insights, discovering ambiguous directives, evidence deficits, and turnaround bottlenecks.',
+      actionText: 'Conclude Tour',
       action: () => {
         endGuidedTour();
       },
@@ -94,46 +87,45 @@ export const GuidedDemoModal: React.FC<GuidedDemoProps> = ({ onNavigate }) => {
   ];
 
   const currentStepData = tourStepsData[tourStep - 1] || tourStepsData[0];
-  const StepIcon = currentStepData.icon;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-md w-full animate-in slide-in-from-bottom-5 duration-200">
-      <div className="bg-[#14284B] text-white p-5 rounded-2xl shadow-2xl border-2 border-[#FFD60A] relative">
+    <div className="fixed bottom-6 right-6 z-50 max-w-md w-full animate-in slide-in-from-bottom-3 duration-200">
+      <div className="bg-[#FFFFFF] text-[#171717] p-6 border border-[#171717] shadow-2xl relative space-y-4">
         {/* Close Button */}
         <button
           onClick={endGuidedTour}
-          className="absolute top-3 right-3 text-slate-400 hover:text-white p-1 rounded-lg"
+          className="absolute top-4 right-4 text-[#73716B] hover:text-[#171717] transition-colors"
           aria-label="Close guided demo"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Step indicator */}
-        <div className="flex items-center gap-2 mb-2">
-          <div className="bg-[#FFD60A] text-[#14284B] text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
-            <Sparkles className="w-3 h-3 fill-[#14284B]" />
-            Tour {currentStepData.step} / {tourStepsData.length}
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#9B382B]">
+              GUIDED ORIENTATION // STEP 0{currentStepData.step} OF 0{tourStepsData.length}
+            </span>
           </div>
-          <span className="text-xs text-blue-200 font-semibold">{currentStepData.title}</span>
+          <h3 className="font-serif text-xl text-[#171717]">{currentStepData.title}</h3>
         </div>
 
         {/* Body */}
-        <div className="flex gap-3 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-navy-800 border border-blue-400/20 flex items-center justify-center shrink-0 text-[#FFD60A]">
-            <StepIcon className="w-5 h-5" />
-          </div>
-          <p className="text-xs text-slate-200 leading-relaxed">{currentStepData.description}</p>
-        </div>
+        <p className="text-xs text-[#5C5B57] leading-relaxed">
+          {currentStepData.description}
+        </p>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-2 border-t border-[#1e3865]">
-          <span className="text-[11px] text-slate-400">Step {currentStepData.step} of 6</span>
+        <div className="flex items-center justify-between pt-3 border-t border-[#D8D5CE]">
+          <span className="text-[10px] font-mono text-[#73716B]">
+            PHASE {currentStepData.step} / {tourStepsData.length}
+          </span>
           <button
             onClick={currentStepData.action}
-            className="flex items-center gap-1.5 bg-[#FFD60A] hover:bg-[#ffe043] text-[#14284B] font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-md transition-all transform hover:scale-[1.02]"
+            className="flex items-center gap-2 bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] text-xs font-medium px-4 py-2 border border-[#171717] transition-colors"
           >
             <span>{currentStepData.actionText}</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5 text-[#9B382B]" />
           </button>
         </div>
       </div>

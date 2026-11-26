@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useBrand } from '../context/BrandContext';
 import { DEMO_ROLES } from '../data/seedData';
+import { Key, RotateCcw, Sparkles, Check } from 'lucide-react';
 import { Shield, Sparkles, RotateCcw, Key, Check, CheckCircle2, ChevronRight, Zap } from 'lucide-react';
 
-export const Header: React.FC<{ onNavigate: (view: string) => void; currentView: string }> = ({
+export const Header: React.FC<{ onNavigate: (view: string) => void; currentView?: string }> = ({
   onNavigate,
-  currentView,
 }) => {
   const {
     currentRole,
     setCurrentRole,
-    currentUser,
     resetDemoData,
     startGuidedTour,
     apiKey,
@@ -39,6 +38,27 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
 
   return (
     <>
+      <header className="bg-[#FFFFFF] border-b border-[#D8D5CE] px-6 py-3.5 sticky top-0 z-40">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          {/* Logo & Masthead Tagline */}
+          <div
+            className="flex items-center gap-4 cursor-pointer select-none group"
+            onClick={() => onNavigate('dashboard')}
+          >
+            <div className="w-8 h-8 bg-[#171717] text-[#F7F6F2] flex items-center justify-center font-serif text-lg font-normal tracking-tight transition-transform group-hover:scale-95">
+              B
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-baseline gap-2.5">
+                <span className="font-serif text-2xl tracking-tight text-[#171717] leading-none">
+                  BrandGuard
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] border border-[#D8D5CE] px-1.5 py-0.2">
+                  VERIFIED PROTOCOL
+                </span>
+              </div>
+              <p className="text-[11px] text-[#73716B] tracking-tight mt-0.5 hidden sm:block">
+                Evidence-backed brand governance before publication.
       <header className="bg-[#14284B] text-white border-b border-[#213f70] px-6 lg:px-10 py-4.5 lg:py-5 sticky top-0 z-40 shadow-[0_4px_24px_rgba(10,22,44,0.25)] select-none">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 max-w-[1850px] mx-auto w-full">
           {/* Logo & Brand Identity — Spacious & Authoritative */}
@@ -65,6 +85,9 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
             </div>
           </div>
 
+          {/* Action Bar & Role Switcher */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Guided Demo Button */}
           {/* Action Center & Persona Switcher — Spacious with Generous Gap */}
           <div className="flex flex-wrap items-center gap-3.5">
             {/* Guided Demo Button — High-Impact Gold Pill */}
@@ -73,6 +96,12 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
                 onNavigate('workspace');
                 startGuidedTour();
               }}
+              className="flex items-center gap-2 bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] text-xs font-medium px-3.5 py-1.5 border border-[#171717] transition-colors"
+              title="Step-by-step interactive demo walkthrough"
+              id="btn-guided-demo"
+            >
+              <Sparkles className="w-3 h-3 text-[#9B382B]" />
+              <span>Guided Tour</span>
               className="flex items-center gap-2 bg-gradient-to-r from-[#FFD60A] to-[#FBBF24] hover:from-[#ffe043] hover:to-[#fcd34d] text-[#14284B] text-xs font-black px-4.5 py-2.5 rounded-xl shadow-md shadow-amber-500/20 hover:shadow-amber-500/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-150"
               title="Launch interactive 60-second guided demo walkthrough"
               id="btn-guided-demo"
@@ -84,6 +113,15 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
             {/* Gemini API Key Button */}
             <button
               onClick={() => setShowKeyModal(true)}
+              className={`flex items-center gap-1.5 text-xs px-3 py-1.5 border transition-colors ${
+                apiKey
+                  ? 'border-[#2D5A38] bg-[#EEF4EF] text-[#2D5A38]'
+                  : 'border-[#D8D5CE] text-[#5C5B57] hover:text-[#171717] hover:border-[#171717] bg-transparent'
+              }`}
+              title="Configure optional Gemini API Key"
+            >
+              <Key className="w-3 h-3" />
+              <span>{apiKey ? 'API Active' : 'API Key'}</span>
               className={`flex items-center gap-2 text-xs font-semibold px-3.5 py-2.5 rounded-xl border transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
                 apiKey
                   ? 'bg-emerald-950/70 border-emerald-500/60 text-emerald-300 shadow-sm'
@@ -97,6 +135,18 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
 
             {/* Reset Demo Data Button */}
             <button
+              onClick={resetDemoData}
+              className="flex items-center gap-1.5 border border-[#D8D5CE] text-[#5C5B57] hover:text-[#171717] hover:border-[#171717] text-xs px-3 py-1.5 bg-transparent transition-colors"
+              title="Reset all drafts, rules, and facts to pristine seed state"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+
+            {/* Editorial Role Switcher */}
+            <div className="flex items-center border border-[#D8D5CE] bg-[#F7F6F2] p-0.5">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] px-2 hidden xl:inline">
+                ACTOR:
               onClick={handleResetWithAnimation}
               className="flex items-center gap-1.5 bg-[#1e3865]/80 hover:bg-[#1e3865] border border-[#2c4e85] text-slate-200 hover:text-white text-xs font-semibold px-3.5 py-2.5 rounded-xl transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-xs"
               title="Reset all drafts, rules, and facts to pristine seed state"
@@ -110,7 +160,7 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-2.5 hidden xl:inline">
                 Active Persona:
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center">
                 {DEMO_ROLES.map((r) => {
                   const isActive = r.id === currentRole;
                   return (
@@ -118,8 +168,12 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
                       key={r.id}
                       onClick={() => {
                         setCurrentRole(r.id);
-                        showToast(`Switched active persona to ${r.name} (${r.title})`);
+                        showToast(`Active persona: ${r.name} (${r.title})`);
                       }}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 text-xs transition-colors ${
+                        isActive
+                          ? 'bg-[#171717] text-[#F7F6F2] font-medium'
+                          : 'text-[#5C5B57] hover:text-[#171717] hover:bg-[#EAE6DB]/60'
                       className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
                         isActive
                           ? 'bg-[#1e3865] text-white shadow-sm border border-blue-400/50 font-bold'
@@ -128,6 +182,9 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
                       aria-label={`Switch role to ${r.name}`}
                       title={`${r.name} — ${r.title}`}
                     >
+                      <span className="font-mono text-[10px] opacity-75">{r.avatar}</span>
+                      <span className="hidden sm:inline">{r.name.split(' ')[0]}</span>
+                      {isActive && <Check className="w-3 h-3 text-[#9B382B]" />}
                       <span
                         className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black transition-colors ${
                           isActive
@@ -148,8 +205,18 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
         </div>
       </header>
 
-      {/* Gemini API Key Modal */}
+      {/* Gemini API Key Modal - Minimal Editorial Form */}
       {showKeyModal && (
+        <div className="fixed inset-0 bg-[#171717]/60 backdrop-blur-[2px] z-50 flex items-center justify-center p-4">
+          <div className="bg-[#FFFFFF] max-w-md w-full p-6 sm:p-8 border border-[#171717] shadow-xl space-y-5">
+            <div className="flex items-baseline justify-between border-b border-[#D8D5CE] pb-3">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">CONFIGURATION</span>
+                <h3 className="font-serif text-2xl text-[#171717]">Gemini API Access</h3>
+              </div>
+              <button
+                onClick={() => setShowKeyModal(false)}
+                className="text-[#73716B] hover:text-[#171717] text-xl font-light leading-none"
         <div className="fixed inset-0 bg-[#08101e]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -164,6 +231,15 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
                 &times;
               </button>
             </div>
+
+            <p className="text-xs text-[#5C5B57] leading-relaxed">
+              BrandGuard operates deterministically out-of-the-box. Providing an optional API key activates live contextual reasoning grounded in the active knowledge base.
+            </p>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-mono uppercase tracking-wider text-[#171717] block">
+                API Key
+              </label>
             <p className="text-xs text-slate-600 leading-relaxed">
               BrandGuard functions fully with deterministic rules & simulated AI out-of-the-box. Providing a Gemini API key
               enables live LLM extraction strictly grounded in your active brand knowledge base.
@@ -175,6 +251,11 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
                 placeholder="AIzaSy..."
                 value={tempKey}
                 onChange={(e) => setTempKey(e.target.value)}
+                className="w-full text-xs font-mono px-3.5 py-2.5 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#D8D5CE]">
                 className="w-full text-xs font-mono px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
               />
             </div>
@@ -185,15 +266,17 @@ export const Header: React.FC<{ onNavigate: (view: string) => void; currentView:
                   setApiKey('');
                   setShowKeyModal(false);
                 }}
+                className="px-3 py-1.5 text-xs text-[#73716B] hover:text-[#171717]"
                 className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-lg transition-colors"
               >
-                Clear Key
+                Clear
               </button>
               <button
                 onClick={handleSaveKey}
+                className="px-4 py-2 text-xs font-medium bg-[#171717] text-[#F7F6F2] hover:bg-[#2b2b2b] border border-[#171717] transition-colors"
                 className="px-4 py-2 text-xs font-bold bg-[#14284B] hover:bg-navy-950 text-white rounded-xl shadow-md transition-all active:scale-[0.98]"
               >
-                Save & Enable Live AI
+                Save & Enable
               </button>
             </div>
           </div>

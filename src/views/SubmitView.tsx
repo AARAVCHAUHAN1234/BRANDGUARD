@@ -1,32 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { useBrand } from '../context/BrandContext';
 import { SAMPLE_DRAFTS } from '../data/seedData';
-import { parseFile, detectFileType, SupportedFileType } from '../services/fileParserService';
-import { VisionAnalysisPanel } from '../components/VisionAnalysisPanel';
-import { VisionAnalysisResult } from '../services/ocrVisionService';
-import {
-  Sparkles,
-  Send,
-  FileEdit,
-  CheckCircle2,
-  RotateCcw,
-  AlertCircle,
-  Upload,
-  FileText,
-  File,
-  X,
-  Loader2,
-  Eye,
-  Check,
-  Shield,
-  Layers,
-} from 'lucide-react';
+import { Check } from 'lucide-react';
 
 export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { createNewSubmission, runReviewOnSubmission, showToast } = useBrand();
 
   const [title, setTitle] = useState<string>('Q4 Product Launch & Platform Update Announcement');
-  const [brand, setBrand] = useState<string>('Nimbus Analytics');
+  const brand = 'Nimbus Analytics';
   const [channel, setChannel] = useState<'LinkedIn' | 'Website' | 'Email' | 'Press' | 'Twitter/X'>('LinkedIn');
   const [market, setMarket] = useState<'US' | 'EU' | 'India' | 'Global'>('EU');
   const [content, setContent] = useState<string>(SAMPLE_DRAFTS.messy.content);
@@ -129,15 +110,19 @@ export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ o
   const charCount = content.length;
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Header Banner */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-heading font-extrabold text-2xl text-navy-900">Submit Content for Review</h1>
-            <span className="bg-[#FFD60A] text-[#14284B] text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-xs">
-              Intake Gateway
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-8 sm:p-10 space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pb-6 border-b border-[#D8D5CE]">
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B]">
+              INTAKE PROTOCOL // 03
             </span>
+            <h1 className="font-serif text-3xl text-[#171717] mt-1">
+              Submit Copy for Governance Review
+            </h1>
+            <p className="text-xs text-[#73716B] mt-1">
+              Supply draft content, target medium, and regulatory jurisdiction before public issuance.
+            </p>
           </div>
           <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
             Run copy, uploaded documents, or marketing assets against Nimbus brand guidelines, verified metrics, and legal
@@ -145,137 +130,27 @@ export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ o
           </p>
         </div>
 
-        {/* Preset Selector */}
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Presets:</span>
-          <button
-            type="button"
-            onClick={() => loadPreset('messy')}
-            className="text-xs font-bold px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-xl border border-rose-200/70 transition-all hover:scale-105 active:scale-95 shadow-xs"
-            title="Load sample copy with obsolete names and unapproved claims"
-          >
-            Messy (5 issues)
-          </button>
-          <button
-            type="button"
-            onClick={() => loadPreset('risky')}
-            className="text-xs font-bold px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl border border-amber-200/70 transition-all hover:scale-105 active:scale-95 shadow-xs"
-            title="Load copy with extreme superlatives and competitor naming"
-          >
-            Risky Claims
-          </button>
-          <button
-            type="button"
-            onClick={() => loadPreset('clean')}
-            className="text-xs font-bold px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl border border-emerald-200/70 transition-all hover:scale-105 active:scale-95 shadow-xs"
-            title="Load compliant, evidence-backed sample"
-          >
-            Clean Copy
-          </button>
-        </div>
-      </div>
-
-      {/* Intake Mode Switcher Tabs */}
-      <div className="flex bg-slate-200/70 p-1.5 rounded-2xl border border-slate-300/80 gap-1.5">
-        <button
-          type="button"
-          onClick={() => setIntakeMode('text')}
-          className={`flex-1 py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all ${
-            intakeMode === 'text'
-              ? 'bg-[#14284B] text-white shadow-md'
-              : 'text-slate-700 hover:text-navy-900 hover:bg-white/60'
-          }`}
-        >
-          <FileEdit className="w-4 h-4" />
-          <span>Direct Text Editor</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setIntakeMode('file')}
-          className={`flex-1 py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all ${
-            intakeMode === 'file'
-              ? 'bg-[#14284B] text-white shadow-md'
-              : 'text-slate-700 hover:text-navy-900 hover:bg-white/60'
-          }`}
-        >
-          <Upload className="w-4 h-4" />
-          <span>Upload Document (PDF / DOCX)</span>
-          {fileInfo && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setIntakeMode('vision')}
-          className={`flex-1 py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all ${
-            intakeMode === 'vision'
-              ? 'bg-[#14284B] text-white shadow-md'
-              : 'text-slate-700 hover:text-navy-900 hover:bg-white/60'
-          }`}
-        >
-          <Eye className="w-4 h-4" />
-          <span>OCR & Visual Governance (Images)</span>
-          {visionResults && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
-        </button>
-      </div>
-
-      {/* Form Card */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm space-y-5">
-        {/* Title & Brand */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2 space-y-1">
-            <label className="text-xs font-black text-slate-700 uppercase tracking-wider block">
-              Submission Title
-            </label>
-            <input
-              type="text"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-xs font-medium px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#14284B] focus:outline-none"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-black text-slate-700 uppercase tracking-wider block">
-              Governed Brand
-            </label>
-            <input
-              type="text"
-              disabled
-              value={brand}
-              className="w-full text-xs font-bold px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 text-slate-600 cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        {/* Channel and Market */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-xs font-black text-slate-700 uppercase tracking-wider block">
-              Target Channel
-            </label>
-            <select
-              value={channel}
-              onChange={(e) => setChannel(e.target.value as any)}
-              className="w-full text-xs font-semibold px-4 py-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-[#14284B] focus:outline-none"
+          {/* Quick presets */}
+          <div className="flex items-center gap-1.5 font-mono text-xs">
+            <span className="text-[10px] uppercase tracking-wider text-[#73716B] mr-1">PRESETS:</span>
+            <button
+              type="button"
+              onClick={() => loadPreset('messy')}
+              className="border border-[#8C6228] bg-[#F7F2E8] text-[#8C6228] hover:bg-[#8C6228] hover:text-[#F7F6F2] text-xs px-2.5 py-1 transition-colors"
             >
-              <option value="LinkedIn">LinkedIn (Professional Tone)</option>
-              <option value="Twitter/X">Twitter/X (Shortform)</option>
-              <option value="Website">Website (Product Marketing)</option>
-              <option value="Email">Email (Direct Demand Gen)</option>
-              <option value="Press">Press Release (Strict Regulatory)</option>
-            </select>
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-black text-slate-700 uppercase tracking-wider block">
-              Target Market & Jurisdiction
-            </label>
-            <select
-              value={market}
-              onChange={(e) => setMarket(e.target.value as any)}
-              className="w-full text-xs font-semibold px-4 py-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-[#14284B] focus:outline-none"
+              Demo Messy
+            </button>
+            <button
+              type="button"
+              onClick={() => loadPreset('risky')}
+              className="border border-[#9B382B] bg-[#F6ECEB] text-[#9B382B] hover:bg-[#9B382B] hover:text-[#F7F6F2] text-xs px-2.5 py-1 transition-colors"
+            >
+              Risky Claims
+            </button>
+            <button
+              type="button"
+              onClick={() => loadPreset('clean')}
+              className="border border-[#2D5A38] bg-[#EEF4EF] text-[#2D5A38] hover:bg-[#2D5A38] hover:text-[#F7F6F2] text-xs px-2.5 py-1 transition-colors"
             >
               <option value="EU">EU (GDPR & Strict Comparative Ad Directives)</option>
               <option value="US">US (FTC Claim Substantiation Rules)</option>
@@ -285,19 +160,47 @@ export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ o
           </div>
         </div>
 
-        {/* CONDITIONAL MODE PANELS */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+            <div className="md:col-span-2 space-y-1.5">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block">
+                Submission Title
+              </label>
+              <input
+                type="text"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full text-xs px-3.5 py-2.5 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
+                placeholder="e.g. Q4 Platform Release Announcement"
+              />
+            </div>
 
-        {/* Mode 1: File Upload Dropzone */}
-        {intakeMode === 'file' && (
-          <div className="space-y-3">
-            <label className="text-xs font-black text-slate-700 uppercase tracking-wider block">
-              Upload Document for Extraction
-            </label>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block">
+                Target Medium
+              </label>
+              <select
+                value={channel}
+                onChange={(e: any) => setChannel(e.target.value)}
+                className="w-full text-xs px-3 py-2.5 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
+              >
+                <option value="LinkedIn">LinkedIn Post</option>
+                <option value="Website">Website / Blog</option>
+                <option value="Email">Customer Email</option>
+                <option value="Press">Press Release</option>
+                <option value="Twitter/X">Twitter / X</option>
+              </select>
+            </div>
 
-            {!fileInfo ? (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-slate-300 hover:border-[#14284B] bg-slate-50/80 hover:bg-blue-50/30 rounded-2xl p-8 text-center cursor-pointer transition-all duration-150 group"
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717] block">
+                Jurisdiction
+              </label>
+              <select
+                value={market}
+                onChange={(e: any) => setMarket(e.target.value)}
+                className="w-full text-xs px-3 py-2.5 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none"
               >
                 <input
                   ref={fileInputRef}
@@ -348,35 +251,65 @@ export const SubmitView: React.FC<{ onNavigate: (view: string) => void }> = ({ o
           </div>
         )}
 
-        {/* Mode 2: Vision & OCR Panel */}
-        {intakeMode === 'vision' && (
-          <div className="space-y-3">
-            <VisionAnalysisPanel
-              onVisionFindings={handleVisionFindings}
-              showToast={showToast}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-[#171717]">
+                Draft Manuscript Copy
+              </label>
+              <span className="text-[10px] font-mono text-[#73716B]">{content.length} characters</span>
+            </div>
+            <textarea
+              rows={9}
+              required
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full text-sm font-sans p-4 border border-[#D8D5CE] bg-[#F7F6F2] text-[#171717] focus:border-[#171717] focus:outline-none leading-relaxed"
+              placeholder="Paste draft copy, marketing announcement, or social copy..."
             />
           </div>
         )}
 
-        {/* Mode 3 / Universal: Copy Content Textarea */}
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-black text-slate-700 uppercase tracking-wider block">
-              {intakeMode === 'file' ? 'Extracted Text Review' : 'Content Copy to Review'}
-            </label>
-            <span className="text-[11px] font-semibold text-slate-500">
-              {wordCount} words • {charCount} characters
-            </span>
+          {/* Review execution button with loading states */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-[#D8D5CE]">
+            <div className="text-xs font-mono text-[#73716B] flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-[#2D5A38]" />
+              <span>EVALUATION ENGINE: NIMBUS CORPUS V2.4</span>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center justify-center gap-2 bg-[#171717] hover:bg-[#2b2b2b] text-[#F7F6F2] text-xs font-medium px-6 py-3 border border-[#171717] transition-colors disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-[#F7F6F2] border-t-transparent animate-spin" />
+                  <span>{stepMessage}</span>
+                </>
+              ) : (
+                <>
+                  <span className="w-1.5 h-1.5 bg-[#9B382B]" />
+                  <span>Execute Verification Run</span>
+                </>
+              )}
+            </button>
           </div>
 
-          <textarea
-            rows={10}
-            required
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Paste raw marketing copy, social draft, or announcement text here..."
-            className="w-full text-xs font-mono p-4 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-[#14284B] focus:outline-none leading-relaxed bg-white selection:bg-yellow-200"
-          />
+      {/* Intake Integrations Ledger */}
+      <div className="border border-[#D8D5CE] bg-[#FFFFFF] p-6 space-y-3">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-[#73716B] block">
+          PIPELINE EXTENSIONS // ROADMAP SPECIFICATION
+        </span>
+        <div className="flex flex-wrap gap-2 text-xs font-mono">
+          <span className="border border-[#D8D5CE] text-[#73716B] bg-[#F7F6F2] px-3 py-1">
+            PDF / DOCX Intake • Tier 2
+          </span>
+          <span className="border border-[#D8D5CE] text-[#73716B] bg-[#F7F6F2] px-3 py-1">
+            Figma OCR & Asset Matching • Tier 2
+          </span>
+          <span className="border border-[#D8D5CE] text-[#73716B] bg-[#F7F6F2] px-3 py-1">
+            Automated Headless CMS Webhooks • Tier 3
+          </span>
         </div>
 
         {/* Submit Button & Progress Indicator */}
